@@ -1,0 +1,667 @@
+[
+  {
+    "course_id": "MATH101",
+    "name": "Engineering Mathematics-I",
+    "description": "Fundamentals of engineering mathematics including calculus, matrices, and differential equations",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["math", "calculus", "linear algebra"],
+    "topics": [
+      "Differential calculus",
+      "Limits and continuity",
+      "Partial derivatives",
+      "Multiple integrals",
+      "Matrices and determinants",
+      "Eigenvalues and eigenvectors",
+      "Differential equations",
+      "Applications of calculus"
+    ]
+  },
+  {
+    "course_id": "CS101",
+    "name": "Principles of Programming using C",
+    "description": "Introduction to programming using C language, focusing on problem solving and basic data structures",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["programming", "c", "problem solving"],
+    "topics": [
+      "Introduction to programming",
+      "C language basics",
+      "Variables and data types",
+      "Operators and expressions",
+      "Control structures (if, loops)",
+      "Functions and recursion",
+      "Arrays and strings",
+      "Pointers",
+      "Structures and unions",
+      "File handling"
+    ]
+  },
+  {
+    "course_id": "CS102",
+    "name": "Introduction to Python Programming",
+    "description": "Python programming fundamentals including data structures and object-oriented concepts",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["python", "programming", "oop"],
+    "topics": [
+      "Python basics",
+      "Variables and data types",
+      "Control flow",
+      "Functions",
+      "Lists, tuples, dictionaries",
+      "File handling",
+      "Exception handling",
+      "Object-oriented programming in Python"
+    ]
+  },
+  {
+    "course_id": "CS103",
+    "name": "Basics of Java Programming",
+    "description": "Introduction to Java and object-oriented programming concepts",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["java", "oop", "programming"],
+    "topics": [
+      "Java basics",
+      "Data types and variables",
+      "Operators",
+      "Control statements",
+      "Classes and objects",
+      "Inheritance",
+      "Polymorphism",
+      "Exception handling"
+    ]
+  },
+  {
+    "course_id": "CS104",
+    "name": "Introduction to Internet of Things",
+    "description": "Basics of IoT including sensors, networking, and cloud integration",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["iot", "networking", "embedded"],
+    "topics": [
+      "Introduction to IoT",
+      "IoT architecture",
+      "Sensors and actuators",
+      "Communication protocols",
+      "Cloud integration",
+      "IoT applications",
+      "Security issues in IoT"
+    ]
+  },
+  {
+    "course_id": "CS105",
+    "name": "Introduction to Cyber Security",
+    "description": "Fundamentals of cybersecurity, threats, and protection mechanisms",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["cybersecurity", "security", "networking"],
+    "topics": [
+      "Cybersecurity fundamentals",
+      "Types of cyber attacks",
+      "Malware and phishing",
+      "Network security basics",
+      "Cryptography basics",
+      "Digital forensics",
+      "Security best practices"
+    ]
+  },
+  {
+    "course_id": "EC101",
+    "name": "Introduction to Electronics and Communication",
+    "description": "Basic concepts of electronics, digital logic, and communication systems",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["electronics", "digital logic", "communication"],
+    "topics": [
+      "Basic electronics",
+      "Semiconductors",
+      "Diodes and transistors",
+      "Digital logic gates",
+      "Boolean algebra",
+      "Communication systems",
+      "Signal transmission"
+    ]
+  },
+  {
+    "course_id": "ME101",
+    "name": "Introduction to Mechanical Engineering",
+    "description": "Overview of mechanical systems, energy, and manufacturing processes",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["mechanical", "engineering"],
+    "topics": [
+      "Basic mechanical systems",
+      "Thermodynamics basics",
+      "Energy systems",
+      "Manufacturing processes",
+      "Materials engineering",
+      "Robotics basics"
+    ]
+  },
+  {
+    "course_id": "ED101",
+    "name": "Computer Aided Engineering Drawing",
+    "description": "Engineering drawing concepts using CAD tools",
+    "prerequisites": [],
+    "credits": 3,
+    "tags": ["cad", "design", "engineering"],
+    "topics": [
+      "Engineering drawing basics",
+      "Orthographic projections",
+      "Isometric projections",
+      "CAD tools",
+      "Dimensioning",
+      "Design visualization"
+    ]
+  },
+  {
+    "course_id": "MATH301",
+    "name": "Mathematics-III (Probability & Statistics)",
+    "description": "Probability theory, distributions, Markov chains, statistical inference, and ANOVA",
+    "prerequisites": ["MATH101"],
+    "credits": 4,
+    "tags": ["math", "statistics", "probability", "data science"],
+    "topics": [
+      "Random variables (discrete and continuous)",
+      "Probability distributions (binomial, poisson, normal, exponential)",
+      "Mathematical expectation, mean, variance",
+      "Joint probability distribution",
+      "Covariance and correlation",
+      "Markov chains",
+      "Sampling distributions",
+      "Hypothesis testing",
+      "Confidence intervals",
+      "t-distribution, chi-square, F-distribution",
+      "Central limit theorem",
+      "ANOVA (one-way, two-way)",
+      "Design of experiments"
+    ]
+  },
+  {
+    "course_id": "CS302",
+    "name": "Digital Design and Computer Organization",
+    "description": "Digital logic, combinational and sequential circuits, and computer architecture fundamentals",
+    "prerequisites": [],
+    "credits": 4,
+    "tags": ["digital logic", "computer architecture", "hardware"],
+    "topics": [
+      "Binary logic and boolean algebra",
+      "Logic gates (AND, OR, NOT, NAND, NOR)",
+      "Karnaugh maps",
+      "Combinational circuits (adders, encoders, multiplexers)",
+      "Sequential circuits",
+      "Flip-flops and latches",
+      "Registers and memory",
+      "Basic computer organization",
+      "Instruction cycle",
+      "Addressing modes",
+      "Input/output organization",
+      "Interrupts",
+      "Cache memory",
+      "Pipelining"
+    ]
+  },
+  {
+    "course_id": "CS303",
+    "name": "Operating Systems",
+    "description": "Concepts of OS including process, memory, file systems, and scheduling",
+    "prerequisites": ["CS101"],
+    "credits": 4,
+    "tags": ["os", "systems", "memory", "process"],
+    "topics": [
+      "Introduction to operating systems",
+      "System calls and OS services",
+      "Process management",
+      "Threads and multithreading",
+      "CPU scheduling algorithms",
+      "Process synchronization",
+      "Deadlocks",
+      "Memory management",
+      "Paging and segmentation",
+      "Virtual memory",
+      "File systems",
+      "Disk scheduling",
+      "Protection and security"
+    ]
+  },
+  {
+    "course_id": "CS304",
+    "name": "Data Structures and Applications",
+    "description": "Fundamentals of linear and non-linear data structures and their applications",
+    "prerequisites": ["CS101"],
+    "credits": 3,
+    "tags": ["data structures", "algorithms", "problem solving"],
+    "topics": [
+      "Arrays and structures",
+      "Pointers and dynamic memory",
+      "Stacks and applications",
+      "Queues and circular queues",
+      "Linked lists (singly, doubly)",
+      "Trees and binary trees",
+      "Binary search trees",
+      "Graph representation",
+      "Graph traversal (DFS, BFS)",
+      "Hashing",
+      "Priority queues",
+      "Optimal binary search trees"
+    ]
+  },
+  {
+    "course_id": "CS305L",
+    "name": "Data Structures Laboratory",
+    "description": "Implementation of data structures and algorithms using C programming",
+    "prerequisites": ["CS304"],
+    "credits": 2,
+    "tags": ["lab", "data structures", "programming"],
+    "topics": [
+      "Stack implementation",
+      "Queue implementation",
+      "Linked list operations",
+      "Polynomial representation",
+      "Binary search trees",
+      "Graph traversal (DFS, BFS)",
+      "Hashing techniques",
+      "File structures"
+    ]
+  },
+  {
+    "course_id": "CS306A",
+    "name": "Object Oriented Programming with Java",
+    "description": "OOP concepts using Java including inheritance, multithreading, and exception handling",
+    "prerequisites": ["CS103"],
+    "credits": 3,
+    "tags": ["java", "oop", "programming"],
+    "topics": [
+      "Java basics and syntax",
+      "Data types and operators",
+      "Control statements",
+      "Classes and objects",
+      "Constructors and methods",
+      "Inheritance",
+      "Polymorphism",
+      "Interfaces",
+      "Packages",
+      "Exception handling",
+      "Multithreading",
+      "Collections and wrappers"
+    ]
+  },
+  {
+    "course_id": "CS306B",
+    "name": "Object Oriented Programming with C++",
+    "description": "Object-oriented programming using C++ including inheritance, templates, and exception handling",
+    "prerequisites": ["CS101"],
+    "credits": 3,
+    "tags": ["cpp", "oop", "programming"],
+    "topics": [
+      "C++ basics",
+      "Classes and objects",
+      "Constructors and destructors",
+      "Function overloading",
+      "Operator overloading",
+      "Inheritance",
+      "Polymorphism",
+      "Virtual functions",
+      "Templates",
+      "Exception handling",
+      "File handling"
+    ]
+  },
+  {
+    "course_id": "CS358C",
+    "name": "Project Management with Git",
+    "description": "Version control using Git including branching, merging, and collaboration",
+    "prerequisites": ["CS101"],
+    "credits": 1,
+    "tags": ["git", "version control", "collaboration"],
+    "topics": [
+      "Git basics",
+      "Repository initialization",
+      "Staging and committing",
+      "Branching and merging",
+      "Stashing changes",
+      "Working with remote repositories",
+      "Cloning repositories",
+      "Rebasing",
+      "Git tags",
+      "Cherry-picking",
+      "Viewing commit history",
+      "Undoing changes"
+    ]
+  },
+  {
+    "course_id": "CS401",
+    "name": "Analysis and Design of Algorithms",
+    "description": "Algorithm design paradigms, complexity analysis, and advanced problem-solving techniques",
+    "prerequisites": ["CS304"],
+    "credits": 3,
+    "tags": ["algorithms", "optimization", "problem solving"],
+    "topics": [
+      "Algorithm analysis",
+      "Asymptotic notation",
+      "Brute force methods",
+      "Divide and conquer",
+      "Merge sort and quick sort",
+      "Dynamic programming",
+      "Greedy algorithms",
+      "Graph algorithms",
+      "Backtracking",
+      "Branch and bound",
+      "NP-complete problems",
+      "Approximation algorithms"
+    ]
+  },
+  {
+  "course_id": "CS402",
+  "name": "Microcontrollers (ARM Based Systems)",
+  "description": "ARM architecture, instruction set, embedded programming, memory management, and real-world embedded system applications",
+  "prerequisites": ["CS302"],
+  "credits": 4,
+  "tags": ["microcontrollers", "embedded systems", "arm", "hardware", "low level programming"],
+  "topics": [
+    "RISC design philosophy",
+    "ARM architecture overview",
+    "ARM registers and CPSR",
+    "Pipeline architecture",
+    "Exceptions and interrupts",
+    
+    "ARM instruction set",
+    "Data processing instructions",
+    "Branch instructions",
+    "Software interrupt instructions",
+    "Coprocessor instructions",
+    
+    "C programming in ARM",
+    "Data types and memory layout",
+    "Loop optimization",
+    "Register allocation",
+    "Function calls and stack usage",
+    "Code optimization techniques",
+    
+    "Memory hierarchy",
+    "Cache architecture",
+    "Set associativity",
+    "Cache policies (write-back, write-through)",
+    "Memory management",
+    "Coprocessor 15",
+    
+    "Embedded system applications",
+    "Firmware development",
+    "Real-time system basics",
+    "Hardware-software interaction"
+  ]
+},
+{
+  "course_id": "CS403",
+  "name": "Database Management Systems",
+  "description": "Fundamentals of database systems, relational models, SQL, normalization, transactions, and NoSQL databases",
+  "prerequisites": ["CS101"],
+  "credits": 4,
+  "tags": ["dbms", "databases", "sql", "data management", "backend"],
+  "topics": [
+    "Introduction to databases",
+    "Database characteristics and advantages",
+    "Database architecture (three-schema architecture)",
+    "Data models, schemas, and instances",
+    "Database languages and interfaces",
+    
+    "Entity-Relationship (ER) modeling",
+    "Entities and relationships",
+    "Weak entities",
+    "Generalization and specialization",
+    "ER diagrams",
+    
+    "Relational model concepts",
+    "Relational constraints",
+    "Relational algebra",
+    "Mapping ER to relational model",
+    
+    "Normalization",
+    "Functional dependencies",
+    "1NF, 2NF, 3NF",
+    "BCNF, 4NF, 5NF",
+    
+    "SQL basics",
+    "DDL, DML, DCL",
+    "SELECT, INSERT, UPDATE, DELETE",
+    "Joins and aggregate functions",
+    "Views and triggers",
+    
+    "Advanced SQL queries",
+    "Assertions and constraints",
+    
+    "Transaction processing",
+    "ACID properties",
+    "Serializability",
+    "Recoverability",
+    
+    "Concurrency control",
+    "Two-phase locking",
+    "Timestamp ordering",
+    "Multiversion concurrency control",
+    
+    "NoSQL databases",
+    "CAP theorem",
+    "Document-based databases",
+    "Key-value stores",
+    "Column-based databases",
+    "Graph databases"
+  ]
+},
+{
+  "course_id": "CS405A",
+  "name": "Discrete Mathematical Structures",
+  "description": "Mathematical foundations for computer science including logic, relations, combinatorics, recurrence relations, and group theory",
+  "prerequisites": ["MATH101"],
+  "credits": 3,
+  "tags": ["discrete math", "logic", "combinatorics", "mathematics", "theory"],
+  "topics": [
+    "Propositional logic",
+    "Logical connectives and truth tables",
+    "Logical equivalence",
+    "Laws of logic",
+    "Implication and inference rules",
+    "Quantifiers and predicates",
+    "Proof techniques",
+    
+    "Mathematical induction",
+    "Well-ordering principle",
+    "Recursive definitions",
+    
+    "Counting principles",
+    "Sum and product rules",
+    "Permutations and combinations",
+    "Binomial theorem",
+    "Combinations with repetition",
+    
+    "Relations and functions",
+    "Cartesian products",
+    "Types of functions (one-to-one, onto)",
+    "Pigeonhole principle",
+    "Function composition and inverse",
+    
+    "Properties of relations",
+    "Equivalence relations",
+    "Partial orders",
+    "Hasse diagrams",
+    "Directed graphs",
+    
+    "Inclusion-exclusion principle",
+    "Derangements",
+    "Rook polynomials",
+    
+    "Recurrence relations",
+    "First-order linear recurrence",
+    "Second-order recurrence",
+    
+    "Group theory basics",
+    "Algebraic structures",
+    "Groups and subgroups",
+    "Cyclic groups",
+    "Cosets",
+    "Lagrange’s theorem"
+  ]
+},
+{
+  "course_id": "CS501",
+  "name": "Software Engineering and Project Management",
+  "description": "Software development processes, requirement engineering, agile methods, project management, and software quality",
+  "prerequisites": ["CS101"],
+  "credits": 3,
+  "tags": ["software engineering", "project management", "agile", "sdlc"],
+  "topics": [
+    "Software engineering fundamentals",
+    "Software development lifecycle (SDLC)",
+    "Process models (waterfall, incremental, agile)",
+    "Requirement engineering",
+    "Use case modeling",
+    "UML diagrams",
+    "Requirement validation",
+    "Agile development and XP",
+    "Software engineering principles",
+    "Project management basics",
+    "Project lifecycle",
+    "Risk management",
+    "Cost-benefit analysis",
+    "Software quality models",
+    "Software metrics and estimation"
+  ]
+},
+{
+  "course_id": "CS502",
+  "name": "Computer Networks",
+  "description": "Fundamentals of networking including OSI model, TCP/IP, routing, transport and application layer protocols",
+  "prerequisites": ["CS101"],
+  "credits": 4,
+  "tags": ["networking", "tcp/ip", "protocols", "communication"],
+  "topics": [
+    "Data communication basics",
+    "OSI model",
+    "TCP/IP model",
+    "Transmission media",
+    "Switching techniques",
+    
+    "Error detection and correction",
+    "Data link layer protocols",
+    "Flow control and error control",
+    "MAC protocols",
+    
+    "Network layer",
+    "IP addressing (IPv4, IPv6)",
+    "Routing algorithms",
+    "RIP, OSPF, BGP",
+    
+    "Transport layer",
+    "UDP protocol",
+    "TCP protocol",
+    "Congestion control",
+    
+    "Application layer",
+    "HTTP",
+    "FTP",
+    "DNS",
+    "Email protocols",
+    "SSH"
+  ]
+},
+{
+  "course_id": "CS503",
+  "name": "Theory of Computation",
+  "description": "Formal languages, automata theory, grammars, and computability concepts",
+  "prerequisites": ["CS405A"],
+  "credits": 4,
+  "tags": ["automata", "theory", "formal languages", "computation"],
+  "topics": [
+    "Finite automata",
+    "DFA and NFA",
+    "Epsilon transitions",
+    "Regular expressions",
+    "Closure properties",
+    "Automata minimization",
+    
+    "Context-free grammars",
+    "Parse trees",
+    "Ambiguity",
+    "Pushdown automata",
+    
+    "Normal forms (CNF, GNF)",
+    "Pumping lemma",
+    
+    "Turing machines",
+    "Decidability",
+    "Undecidability",
+    "Computational complexity"
+  ]
+},
+{
+  "course_id": "CS515B",
+  "name": "Artificial Intelligence",
+  "description": "Introduction to AI including search algorithms, logical reasoning, knowledge representation, and planning",
+  "prerequisites": ["CS401", "MATH301"],
+  "credits": 3,
+  "tags": ["ai", "machine learning", "search", "logic"],
+  "topics": [
+    "Introduction to AI",
+    "Intelligent agents",
+    "Search strategies",
+    "Uninformed search",
+    "Informed search",
+    "Heuristic functions",
+    
+    "Knowledge representation",
+    "Propositional logic",
+    "Inference",
+    
+    "First-order logic",
+    "Unification",
+    "Forward and backward chaining",
+    
+    "Planning algorithms",
+    "State-space search",
+    "Planning graphs"
+  ]
+},
+{
+  "course_id": "CSL504",
+  "name": "Web Technology Lab",
+  "description": "Hands-on development of web applications using HTML, CSS, JavaScript, AJAX, jQuery, and PHP",
+  "prerequisites": ["CS101"],
+  "credits": 1,
+  "tags": ["web development", "frontend", "backend", "javascript", "php"],
+  "topics": [
+    "HTML fundamentals",
+    "HTML tags and elements",
+    "Forms and input elements",
+    "Tables and layouts",
+    
+    "CSS styling",
+    "Selectors and properties",
+    "Responsive design basics",
+    
+    "JavaScript basics",
+    "DOM manipulation",
+    "Event handling",
+    "JSON handling",
+    
+    "jQuery basics",
+    "Animations",
+    "AJAX requests",
+    "getJSON and parseJSON",
+    
+    "PHP basics",
+    "Server-side scripting",
+    "Form handling",
+    "Database interaction",
+    
+    "Web application development",
+    "Full-stack mini projects",
+    "Cloud deployment basics"
+  ]
+}
+
+
+
+]
+
