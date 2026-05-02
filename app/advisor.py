@@ -78,17 +78,35 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
     return response.content
 
 if __name__ == "__main__":
-    # Test parameters
-    query = "I want to become a Data Scientist"
-    completed = ["Intro to Programming"] # Change this to test prereq logic
-    goal = "Data Scientist"
-    limit = 12
-
-    print("\n--- Consulting AI Academic Advisor ---")
+        print("---Helelo!! --")
+        print("Type 'exit' to quit anytime\n")
+        
+        #Student profile
+        goal=input(" What is your career goal? (e.g., Data scientist):")
+        completed_input=input(" Inter completed courses (comma-separated):")
+        completed=[c.strip() for c in completed_input.split(",")]
+        
+        try:
+            limit=int(input(" What is your credit limit For the semester ? (e.g., 12): "))
+        except ValueError:
+            print("Invalid number for credits. defaulting to 12")
+            limit =12
+            
+        
+        while True:
+            print("\n" + "-"*30)
+            query= input("\n How can I help you with your course selection ??")
+            
+            if query.lower() in ["exit","quit", "bye"]:
+                print("Byeeeee !! Good luck with your studies")
+                break
+            
+            print("\n Finding the relevant courses----")
+            
+            try:
+                response=academic_advisor(query,completed,goal,limit)
+                print("\n Recommended plan:")
+                print(response)
+            except Exception as e:
+                print(f"Error occured: {e}")
     
-    # Actually run the function!
-    response = academic_advisor(query, completed, goal, limit)
-    
-    # Show the result
-    print("\nRecommended Courses (JSON):")
-    print(response)

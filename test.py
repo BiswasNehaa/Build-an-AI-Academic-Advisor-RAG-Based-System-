@@ -10,7 +10,7 @@ print("\nCareers loaded:", len(careers))
 print("Careers keys:", careers.keys()) '''
 
 
-from app.parser import parse_query
+"""from app.parser import parse_query
 
 
 queries = [
@@ -23,4 +23,28 @@ queries = [
 for q in queries:
     print("Query:", q)
     print("Output:", parse_query(q))
-    print("-" * 50)
+    print("-" * 50) 
+    
+    
+import langchain
+import faiss
+from pydantic import BaseModel
+
+print("LangChain", langchain.__version__)
+print("FAISS")
+print("Pydantic")
+
+
+import os
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
+
+load_dotenv()
+
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    temperature=0,
+)
+
+response = llm.invoke("Hii")
+print(response.content) """
