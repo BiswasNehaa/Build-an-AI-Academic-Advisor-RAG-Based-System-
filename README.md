@@ -76,13 +76,11 @@ Unlike traditional chatbots, this system combines **semantic retrieval** with **
 ---
 
 ## 🧩 Tech Stack
-
-* **Backend:** Python, FastAPI
+* **Language:** Python
 * **RAG Framework:** LangChain
 * **Vector Database:** FAISS
-* **LLM:** OpenAI / LLM APIs
-* **Data:** JSON (course catalog), PDFs (syllabus)
-
+* **LLM:** Groq (Llama 3.3)
+* **Embeddings:** HuggingFace
 ---
 
 ## 📥 Input Example
@@ -151,3 +149,56 @@ Students often struggle to navigate academic pathways due to fragmented informat
 
 ---
 
+
+🛠️ Setup & Installation
+
+Replace that messy section in your README.md with this:
+Markdown
+
+## 🛠️ Setup & Installation
+
+Follow these steps to configure the AI Academic Advisor on your local machine:
+
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/BiswasNehaa/AI-Academic-Advisor.git](https://github.com/BiswasNehaa/AI-Academic-Advisor.git)
+cd AI-Academic-Advisor
+
+2. Set Up a Virtual Environment
+It is recommended to use a virtual environment to keep dependencies isolated.
+Bash
+
+python -m venv venv
+# Activate on Windows:
+.\venv\Scripts\activate
+# Activate on Mac/Linux:
+source venv/bin/activate
+
+3. Install Dependencies
+
+Install all required libraries using the requirements file:
+Bash
+
+pip install -r req.txt
+
+4. Configuration (API Keys)
+
+    Create a file named .env in the root directory.
+
+    Add your Groq API key to the file:
+
+Plaintext
+
+GROQ_API_KEY=your_groq_api_key_here
+
+5. Initialize & Run
+
+First, process the course data to build the local vector database:
+Bash
+
+python app/ingest.py
+
+Finally, launch the interactive academic advisor:
+Bash
+
+python app/advisor.py
