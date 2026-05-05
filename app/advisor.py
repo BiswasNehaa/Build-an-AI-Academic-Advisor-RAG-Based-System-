@@ -3,10 +3,16 @@ import os
 from dotenv import load_dotenv
 load_dotenv() 
 
+import re
 import json
 from langchain_groq import ChatGroq
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+
+#handle all user input
+def clean_subject_input(user_input):
+    raw_list=re.split(r'[,\s;]+',user_input)
+    return [sub.strip().upper() for sub in raw_list if sub.strip()]
 
 # Model Setup
 embeddings=HuggingFaceBgeEmbeddings(model_name="all-MiniLM-L6-v2")
@@ -83,8 +89,8 @@ if __name__ == "__main__":
         
         #Student profile
         goal=input(" What is your career goal? (e.g., Data scientist):")
-        completed_input=input(" Inter completed courses (comma-separated):")
-        completed=[c.strip() for c in completed_input.split(",")]
+        completed_input=input(" Inter completed courses :")
+        completed=clean_subject_input(completed_input)
         
         try:
             limit=int(input(" What is your credit limit For the semester ? (e.g., 12): "))

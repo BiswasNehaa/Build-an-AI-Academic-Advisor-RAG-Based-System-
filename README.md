@@ -160,13 +160,11 @@ Markdown
 Follow these steps to configure the AI Academic Advisor on your local machine:
 
 ### 1. Clone the Repository
-```bash
 git clone [https://github.com/BiswasNehaa/AI-Academic-Advisor.git](https://github.com/BiswasNehaa/AI-Academic-Advisor.git)
 cd AI-Academic-Advisor
 
 2. Set Up a Virtual Environment
 It is recommended to use a virtual environment to keep dependencies isolated.
-Bash
 
 python -m venv venv
 # Activate on Windows:
@@ -177,7 +175,6 @@ source venv/bin/activate
 3. Install Dependencies
 
 Install all required libraries using the requirements file:
-Bash
 
 pip install -r req.txt
 
@@ -186,9 +183,6 @@ pip install -r req.txt
     Create a file named .env in the root directory.
 
     Add your Groq API key to the file:
-
-Plaintext
-
 GROQ_API_KEY=your_groq_api_key_here
 
 5. Initialize & Run
@@ -199,6 +193,4 @@ Bash
 python app/ingest.py
 
 Finally, launch the interactive academic advisor:
-Bash
-
 python app/advisor.py
