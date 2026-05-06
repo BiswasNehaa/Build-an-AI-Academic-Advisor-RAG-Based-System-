@@ -35,6 +35,9 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
     
     for doc in docs:
         course_id = doc.metadata['course_id']
+        
+        if course_id in completed_courses:
+            continue
         prereqs = doc.metadata['prerequisites']
         course_credits = doc.metadata['credits']
         
@@ -42,7 +45,6 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
         
         
         #eligible courses list
-        # Eligible courses list
         if not missing:
             eligible_pool.append({
                 "course_id": course_id,
@@ -64,10 +66,10 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
     Goal: {career_goal}
     Credit Limit: {student_credit}
     
-    TASK:
-    1. From the 'Eligible Pool', select the TOP 4 most relevant courses for the career goal.
-    2. Ensure the TOTAL CREDITS of selected courses is <= {student_credit}.
-    3. If you can't fit 4, pick as many as possible within the limit.
+    CRITICAL RULES:
+    1. If the student's goal is "{career_goal}", prioritize courses like Python, AI, ML, Data Science, or Math.
+    2. DO NOT recommend "Intro" or "Basics" courses (like C or Java) unless they are absolutely necessary as a prerequisite for a higher-level AI course.
+    3. Ensure the TOTAL CREDITS <= {student_credit}.
     4. Return ONLY a JSON object.
     """
     
