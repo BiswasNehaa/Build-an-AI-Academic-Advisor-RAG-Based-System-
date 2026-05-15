@@ -5,22 +5,34 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
 def create_vector_db():
-    if not os.path.exists('../Data/courses.json'):
-        print("Error, coutses.json not found")
+    json_path='../Data/courses.json'
+    if not os.path.exists(json_path):
+        print(f"Error : {json_path} not found")
         return
     
-    with open ('../Data/courses.json','r')  as f:
+    with open (json_path,'r')  as f:
         courses=json.load(f)
         
     documents=[]
     for course in courses:
-        page_content=f"Course: {course['name']}.Description: {course['description']}"
+        # get metadata
+        outcomes_text =" ".join(course.get('course_outcome',[]))
+        topics_text=" ".join(course.get('topics',[]))
+        
+        # This is what the AI "reads" to find matches
+        page_content = (
+            f"Course: {course['name']}. "
+            f"Description: {course['description']}. "
+            f"Topics covered: {topics_text}. "
+            f"Learning Outcomes: {outcomes_text}"
+        )
         
         metadata = {
-            "course_id": course['course_id'],
-            "prerequisites": course['prerequisites'],
-            "credits": course['credits'],
-            "tags": course['tags']
+            "course_id": course['course_code'],
+            "name":course['name'],
+            "prerequisites": course.get('prerequisites',[]),
+            "credits": course.get('credits',0),
+            "outcomes":outcomes_text
         }
         documents.append(Document(page_content=page_content, metadata=metadata))
         
