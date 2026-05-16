@@ -1,5 +1,6 @@
 # Main logic 
 import os
+import time 
 from dotenv import load_dotenv
 load_dotenv() 
 
@@ -7,7 +8,7 @@ import re
 import json
 from langchain_groq import ChatGroq
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 #handle all user input
 def clean_subject_input(user_input):
@@ -15,7 +16,7 @@ def clean_subject_input(user_input):
     return [sub.strip().upper() for sub in raw_list if sub.strip()]
 
 # Model Setup
-embeddings=HuggingFaceBgeEmbeddings(model_name="all-MiniLM-L6-v2")
+embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 llm=ChatGroq(model="llama-3.3-70b-versatile",temperature=0)  #deterministic
 
 #load vectordb
@@ -38,8 +39,10 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
         
         if course_id in completed_courses:
             continue
-        prereqs = doc.metadata['prerequisites']
-        course_credits = doc.metadata['credits']
+        
+        prereqs = doc.metadata.get('prerequisites',[])
+        course_credits = doc.metadata.get('credits',0)
+        outcomes=doc.metadata.get('outcomes',"No specific outcomes listed")
         
         missing=[p for p in prereqs if p not in completed_courses]
         
@@ -48,9 +51,9 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
         if not missing:
             eligible_pool.append({
                 "course_id": course_id,
-                "course_name": doc.page_content.split('.')[0].replace("Course: ", ""),
-                "credits": course_credits,  # <--- FIX: Use the variable name
-                "tags": doc.metadata['tags']
+                "course_name": doc.metadata.get('name',"Unknown"),
+                "credits": course_credits,  
+                "outcomes": outcomes
             })
         
         #missing pre reqs
@@ -60,17 +63,16 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
                 "reason": f"Missing prerequisite: {', '.join(missing)}"
             })
             
-    # LLM Selection
+    # 2. LLM Selection
     system_prompt = f"""
     You are an AI Academic Advisor.
-    Goal: {career_goal}
-    Credit Limit: {student_credit}
+    Goal: {career_goal} | Credit Limit: {student_credit}
     
     CRITICAL RULES:
-    1. If the student's goal is "{career_goal}", prioritize courses like Python, AI, ML, Data Science, or Math.
-    2. DO NOT recommend "Intro" or "Basics" courses (like C or Java) unless they are absolutely necessary as a prerequisite for a higher-level AI course.
-    3. Ensure the TOTAL CREDITS <= {student_credit}.
-    4. Return ONLY a JSON object.
+    1. Prioritize courses based on the User Goal.
+    2. TOTAL CREDITS must be <= {student_credit}.
+    3. For each recommendation, provide a 'reason' based ONLY on the provided 'outcomes'.
+    4. Return a JSON object with this structure: {{"recommendations": [{{"id", "name", "reason", "credits"}}]}}
     """
     
     prompt_input = {
@@ -87,11 +89,11 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
 
 if __name__ == "__main__":
         print("---Helelo!! --")
-        print("Type 'exit' to quit anytime\n")
+        #print("Type 'exit' to quit anytime\n")
         
         #Student profile
         goal=input(" What is your career goal? (e.g., Data scientist):")
-        completed_input=input(" Inter completed courses :")
+        completed_input=input(" Enter completed courses :")
         completed=clean_subject_input(completed_input)
         
         try:
@@ -100,21 +102,33 @@ if __name__ == "__main__":
             print("Invalid number for credits. defaulting to 12")
             limit =12
             
+        start_time=time.time()
         
         while True:
-            print("\n" + "-"*30)
-            query= input("\n How can I help you with your course selection ??")
-            
-            if query.lower() in ["exit","quit", "bye"]:
-                print("Byeeeee !! Good luck with your studies")
+            #10 min time out
+            if time.time() - start_time > 600:
+                print("\n[TIMEOUT] Session expired. Goodbye!")
                 break
             
-            print("\n Finding the relevant courses----")
+            print("\n" + "-"*30)
+            query = input("\nQuery (or 'forgot' to add courses / 'exit' to quit): ")
             
+            if query.lower() in ["exit", "quit", "bye"]:
+                print("Byeeeee !!")
+                break
+                
+            # "forgotten" courses logic
+            if query.lower() == "forgot":
+                more_input = input("Enter the courses you forgot: ")
+                new_courses = clean_subject_input(more_input)
+                completed.extend(new_courses)
+                print(f"Updated completed list: {completed}")
+                continue
+
+            print("\nFinding relevant courses...")
             try:
-                response=academic_advisor(query,completed,goal,limit)
-                print("\n Recommended plan:")
+                response = academic_advisor(query, completed, goal, limit)
+                print("\nRecommended plan:")
                 print(response)
             except Exception as e:
-                print(f"Error occured: {e}")
-    
+                print(f"Error: {e}")
