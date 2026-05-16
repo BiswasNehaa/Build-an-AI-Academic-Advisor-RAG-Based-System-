@@ -15,24 +15,31 @@ def create_vector_db():
         
     documents=[]
     for course in courses:
-        # get metadata
-        outcomes_text =" ".join(course.get('course_outcome',[]))
-        topics_text=" ".join(course.get('topics',[]))
         
-        # This is what the AI "reads" to find matches
+        outcomes_list = course.get('course_outcomes', [])
+        topics_list = course.get('topics', [])
+        
+        # Join them into strings
+        outcomes_text = " ".join(outcomes_list)
+        topics_text = " ".join(topics_list)
+        
+        # Debug helper: This will tell you if a course is missing data
+        if not outcomes_list:
+            print(f"Warning: No outcomes found for {course.get('course_code')}")
+        
         page_content = (
             f"Course: {course['name']}. "
             f"Description: {course['description']}. "
-            f"Topics covered: {topics_text}. "
-            f"Learning Outcomes: {outcomes_text}"
+            f"Topics: {topics_text}. "
+            f"Outcomes: {outcomes_text}"
         )
         
         metadata = {
             "course_id": course['course_code'],
-            "name":course['name'],
-            "prerequisites": course.get('prerequisites',[]),
-            "credits": course.get('credits',0),
-            "outcomes":outcomes_text
+            "name": course['name'],
+            "prerequisites": course.get('prerequisites', []),
+            "credits": course.get('credits', 0),
+            "outcomes": outcomes_text
         }
         documents.append(Document(page_content=page_content, metadata=metadata))
         
