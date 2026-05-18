@@ -28,6 +28,7 @@ def create_vector_db():
             print(f"Warning: No outcomes found for {course.get('course_code')}")
         
         page_content = (
+            f"Course Code: {course['course_code']}"
             f"Course: {course['name']}. "
             f"Description: {course['description']}. "
             f"Topics: {topics_text}. "
