@@ -12,7 +12,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 #handle all user input
 def clean_subject_input(user_input):
-    raw_list=re.split(r'[,\s;]+',user_input)
+    raw_list=re.split(r'[;]+',user_input)
     return [sub.strip().upper() for sub in raw_list if sub.strip()]
 
 # Model Setup
@@ -26,25 +26,37 @@ vector_db=FAISS.load_local("faiss_index",embeddings,allow_dangerous_deserializat
 
 def academic_advisor(query, completed_courses, career_goal, student_credit):
     # 1. Retrieval
-    docs = vector_db.similarity_search(query, k=15)
+    docs = vector_db.similarity_search(query, k=20)
     
     # 2. Setup
     eligible_pool=[]
     excluded = []
     #total_credits = 0
     
+    completed_upper=[c.upper() for c in completed_courses]
+    
     
     for doc in docs:
-        course_id = doc.metadata['course_id']
+        course_id = doc.metadata.get('course_id','').upper()
+        course_name=doc.metadata.get('name','').upper()
         
-        if course_id in completed_courses:
+        
+        is_done=False
+        for completed_item in completed_upper:
+            #if course_id in completed_courses or course_name in completed_upper:
+                #continue
+            if completed_item in course_id or completed_item in course_name or course_name in completed_item:
+                is_done=True
+                break
+            
+        if is_done:
             continue
         
         prereqs = doc.metadata.get('prerequisites',[])
         course_credits = doc.metadata.get('credits',0)
         outcomes=doc.metadata.get('outcomes',"No specific outcomes listed")
         
-        missing=[p for p in prereqs if p not in completed_courses]
+        missing=[p for p in prereqs if p not in completed_upper]
         
         
         #eligible courses list
@@ -65,14 +77,14 @@ def academic_advisor(query, completed_courses, career_goal, student_credit):
             
     # 2. LLM Selection
     system_prompt = f"""
-    You are an AI Academic Advisor.
-    Goal: {career_goal} | Credit Limit: {student_credit}
+    You are a Senior AI Mentor. 
+    Goal: {career_goal}
     
-    CRITICAL RULES:
-    1. Prioritize courses based on the User Goal.
-    2. TOTAL CREDITS must be <= {student_credit}.
-    3. For each recommendation, provide a 'reason' based ONLY on the provided 'outcomes'.
-    4. Return a JSON object with this structure: {{"recommendations": [{{"id", "name", "reason", "credits"}}]}}
+    INSTRUCTIONS:
+    1. Direct Advice: Only talk about the NEXT steps for AI. 
+    2. Zero Junk: Do not list or mention any general engineering electives.
+    3. Roadmap Focus: If no AI courses are eligible, explain the specific prerequisites needed from the 'excluded' list.
+    4. Format: Return a short, encouraging message followed by a CLEAN JSON object containing ONLY the recommended next steps.
     """
     
     prompt_input = {
@@ -94,7 +106,8 @@ if __name__ == "__main__":
         #Student profile
         goal=input(" What is your career goal? (e.g., Data scientist):")
         completed_input=input(" Enter completed courses :")
-        completed=clean_subject_input(completed_input)
+        #completed=clean_subject_input(completed_input)
+        completed=[c.strip().upper() for c in completed_input.split(',') if c.strip()]
         
         try:
             limit=int(input(" What is your credit limit For the semester ? (e.g., 12): "))
@@ -120,7 +133,8 @@ if __name__ == "__main__":
             # "forgotten" courses logic
             if query.lower() == "forgot":
                 more_input = input("Enter the courses you forgot: ")
-                new_courses = clean_subject_input(more_input)
+                #new_courses = clean_subject_input(more_input)
+                new_courses = [c.strip().upper() for c in more_input.split(',') if c.strip()]
                 completed.extend(new_courses)
                 print(f"Updated completed list: {completed}")
                 continue
