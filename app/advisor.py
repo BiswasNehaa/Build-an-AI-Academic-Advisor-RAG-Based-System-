@@ -169,7 +169,27 @@ def enrich_completed_list(completed_names: list[str]) -> list[str]:
                 print(f"[Python ✓ Substring]   '{name}' → {course_code}")
                 found = True
                 break
+            
+            # Match 4: Student typed a partial code that appears inside the full code
+            # e.g. "BPLCK105B" is contained in "BPLCK105B/205B"
+            if len(name_upper) >= 6 and name_upper in course_code:
+                if course_code not in enriched:
+                    enriched.append(course_code)
+                print(f"[Python ✓ Partial Code] '{name}' → {course_code}")
+                found = True
+                break
 
+
+            # Match 5: Full code contains the student's input as the primary part
+            # e.g. "BETCK105H/205H" should match if student types "BETCK105H"
+            if '/' in course_code and name_upper == course_code.split('/')[0]:
+                if course_code not in enriched:
+                    enriched.append(course_code)
+                print(f"[Python ✓ Split Code]  '{name}' → {course_code}")
+                found = True
+                break
+            
+            
         if not found:
             unmatched.append(name)   # hand off to LLM
 
@@ -486,6 +506,9 @@ def filter_candidates(docs: list, completed_upper: list[str],
         }
         if not is_career_relevant(candidate, career_keywords):
             continue
+        
+        # Temporary debug — add inside filter_candidates after Check 4
+        print(f"[Relevance Check] {course_id}: {is_career_relevant(candidate, career_keywords)}")
 
         # ── Check 5: Credit cap ────────────────────────────────────────────────
         # Don't recommend more credits than the student can take this semester.
@@ -646,6 +669,11 @@ def academic_advisor(query: str, completed_courses: list[str],
     eligible_pool, excluded = filter_candidates(
         candidate_docs, completed_upper, career_keywords, credit_limit
     )
+    all_ids = [d.metadata.get('course_id') for d in candidate_docs]
+    print(f"\n[Debug] Was BCS301 retrieved? {'BCS301' in all_ids}")
+    print(f"[Debug] Was BCS358A retrieved? {'BCS358A' in all_ids}")
+    print(f"[Debug] Eligible pool: {[c['course_id'] for c in eligible_pool]}")
+    print(f"[Debug] Total retrieved: {len(candidate_docs)}")
 
     # Stage E: LLM builds the roadmap
     raw_response = build_llm_response(
