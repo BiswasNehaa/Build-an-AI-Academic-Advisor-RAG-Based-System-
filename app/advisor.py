@@ -267,6 +267,13 @@ OUTPUT:
         for entry in llm_unmatched:
             print(f"[No Match]         '{entry}' — stored as typed, "
                   f"will still be used for substring checks")
+            
+        # In enrich_completed_list, after the LLM no-match case:
+        llm_unmatched = [e for e in unmatched if e not in all_matches]
+        for entry in llm_unmatched:
+            print(f"[⚠️  Warning] '{entry}' could not be matched to any course.")
+            print(f"             Please check the spelling. If this was a completed")
+            print(f"             course, type 'forgot' to re-enter it correctly.")
 
     else:
         print("[Enrichment] All entries matched by Python. LLM call skipped.")
@@ -406,20 +413,36 @@ def is_career_relevant(course: dict, career_keywords: list[str]) -> bool:
         course['course_name'].lower() + " " +
         course['outcomes'].lower()
     )
+    
+    matched_keywords=[]
 
     for kw in career_keywords:
         kw_lower = kw.lower()
-        # Full keyword match
-        if kw_lower in searchable:
-            return True
-        # Word-level match for multi-word keywords
-        # e.g. "statistics" matches "statistical", "learning" matches "machine learning"
-        if len(kw_lower.split()) > 1:
-            if any(word in searchable for word in kw_lower.split() if len(word) > 4):
-                return True
+        kw_words=kw_lower.split()
+        
+        if len(kw_words) ==1 :
+            # Single word keyword : must appear as a whole word not substring 
+            pattern=r'\b'+re.escape(kw_lower) +r'\b'
+            matches= re.findall(pattern,searchable)
+            # Require it appears at least twice :signals the course 
+            #it is actually about this topic ,not mentioning it 
+            if len(matches)>=2:
+                matched_keywords.append(kw)
+                ###############
+                print(f"[Relevance Detail] '{kw}' found {len(matches)}x"
+                      f"in {course['course_id']}")
+        
+        else:
+            # Multi-word keyword e.g. "machine learning"
+            # Check full phrase first
+            if kw_lower in searchable:
+                matched_keywords.append(kw)
+            # Then check significant individual words (len > 5 to be stricter)
+            elif any(word in searchable for word in kw_words if len(word) > 5):
+                matched_keywords.append(kw)
 
-    return False
-
+    return len(matched_keywords) > 0
+       
 
 def deduplicate_pool(eligible_pool: list[dict]) -> list[dict]:
     """
@@ -466,13 +489,26 @@ def filter_candidates(docs: list, completed_upper: list[str],
     eligible_pool  = []
     excluded       = []
     credits_so_far = 0
-
-    for doc in docs:
+    
+    #########################3
+    watch=['BCS301','BCS358A','BCS302','BCS2303']
+    
+    # Short docs to process low prerequisite courses first _______________________________________
+    docs_sorted=sorted(
+        docs,
+        key=lambda d: (
+            len(d.metadata.get('prerequisites',[])), #fewer pre-req first
+            d.metadata.get('credits',0)   #smaller credits next
+        )
+    )
+    for doc in docs_sorted:
         course_id   = doc.metadata.get('course_id', '').upper()
         course_name = doc.metadata.get('name', '').upper()
         prereqs     = doc.metadata.get('prerequisites', [])
         credits     = doc.metadata.get('credits', 0)
         outcomes    = doc.metadata.get('outcomes', 'No outcomes listed.')
+        
+        
 
         # ── Check 1: Already completed? ───────────────────────────────────────
         identity = f"{course_id} {course_name}"
