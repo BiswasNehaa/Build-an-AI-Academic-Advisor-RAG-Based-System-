@@ -13,7 +13,8 @@ from langchain_core.documents import Document
 
 
 def create_vector_db():
-    json_path = '../Data/courses.json'
+    #json_path = '../Data/courses.json'
+    json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Data', 'courses.json')
 
     if not os.path.exists(json_path):
         print(f"Error: {json_path} not found. Please check the Data folder.")
@@ -41,7 +42,7 @@ def create_vector_db():
         # which caused it to merge with the course name during embedding.
         # -----------------------------------------------------------------
         page_content = (
-            f"Course Code: {course['course_code']}. "   # <-- fixed: added period+space
+            f"Course Code: {course['course_code']}. "   
             f"Course: {course['name']}. "
             f"Description: {course['description']}. "
             f"Topics: {topics_text}. "

@@ -491,7 +491,7 @@ def filter_candidates(docs: list, completed_upper: list[str],
     credits_so_far = 0
     
     #########################3
-    watch=['BCS301','BCS358A','BCS302','BCS2303']
+    #watch=['BCS301','BCS358A','BCS302','BCS2303']
     
     # Short docs to process low prerequisite courses first _______________________________________
     docs_sorted=sorted(
