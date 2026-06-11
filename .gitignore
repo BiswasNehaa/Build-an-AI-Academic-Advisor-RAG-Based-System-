@@ -3,3 +3,4 @@ RAG/
 __pycache__/
 *.pyc
 vector_db/__pycache__/
+.env
