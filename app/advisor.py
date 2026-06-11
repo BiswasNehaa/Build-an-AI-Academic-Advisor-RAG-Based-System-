@@ -47,20 +47,29 @@ embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
 # FAISS vector store — built once by ingest.py, loaded read-only here.
-vector_db = FAISS.load_local(
+"""vector_db = FAISS.load_local(
     "faiss_index",
     embeddings,
     allow_dangerous_deserialization=True   # safe: we built this file ourselves
+)"""
+FAISS_INDEX_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'faiss_index')
+
+vector_db = FAISS.load_local(
+    FAISS_INDEX_PATH,
+    embeddings,
+    allow_dangerous_deserialization=True
 )
 
 # Full course catalog — used by enrichment to map names → course codes.
-COURSES_JSON_PATH = '../Data/courses.json'
+#COURSES_JSON_PATH = '../Data/courses.json'
+COURSES_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Data', 'courses.json')
 with open(COURSES_JSON_PATH, 'r') as f:
     ALL_COURSES = json.load(f)
 
 # Career skills map — maps career titles to required skill keywords.
 # Adding new careers requires only editing career.json, zero code changes.
-CAREER_JSON_PATH = '../Data/career.json'
+#CAREER_JSON_PATH = '../Data/career.json'
+CAREER_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Data', 'career.json')
 with open(CAREER_JSON_PATH, 'r') as f:
     CAREER_DATA = json.load(f)
 
