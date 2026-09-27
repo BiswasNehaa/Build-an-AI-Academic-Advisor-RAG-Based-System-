@@ -13,7 +13,6 @@ from langchain_core.documents import Document
 
 
 def create_vector_db():
-    #json_path = '../Data/courses.json'
     json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Data', 'courses.json')
 
     if not os.path.exists(json_path):
