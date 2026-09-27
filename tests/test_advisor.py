@@ -81,6 +81,19 @@ def test_is_career_relevant_false_when_nothing_matches(advisor):
     assert advisor.is_career_relevant(course, ["machine learning", "python"]) is False
 
 
+def test_is_career_relevant_single_shared_word_is_not_enough_for_a_phrase(advisor):
+    # Regression test: a computer organization course whose outcomes mention
+    # "machine instructions" was incorrectly flagged as "machine learning"
+    # relevant because the old logic matched on ANY significant word in the
+    # keyword phrase rather than ALL of them.
+    course = {
+        "course_id": "BCS302",
+        "course_name": "Digital Design and Computer Organization",
+        "outcomes": "Describe the fundamentals of machine instructions, addressing modes and processor performance.",
+    }
+    assert advisor.is_career_relevant(course, ["machine learning"]) is False
+
+
 # ── enrich_completed_list ────────────────────────────────────────────────────
 # Uses the real Data/courses.json shipped with the repo (e.g. BCS304 "Data
 # Structure and Applications", BPHYS102/202 "Applied Physics for CSE Stream").
@@ -176,6 +189,44 @@ def test_validate_course_codes_keeps_steps_without_any_code_claim(advisor):
             {
                 "complete_first": "Basics of C programming concepts",
                 "this_will_unlock": "Data Structure and Applications (BCS304)",
+                "which_then_unlocks": "",
+            }
+        ],
+    }
+    result = advisor.validate_course_codes(data)
+    assert len(result["unlock_next"]) == 1
+
+
+def test_validate_course_codes_drops_step_with_false_unlock_claim(advisor):
+    # Regression test for a real bug observed on the deployed app: the LLM
+    # claimed "Digital Design and Computer Organization" (BCS302, which has
+    # no prerequisites and isn't a prerequisite of anything) would unlock
+    # "Data Structures Laboratory" (BCSL305), whose real prerequisite is
+    # "C Programming Concepts". Both course names/codes are real, but the
+    # causal claim between them is false -- is_grounded() alone (checking
+    # codes exist) wouldn't have caught this.
+    data = {
+        "enroll_now": [],
+        "unlock_next": [
+            {
+                "complete_first": "Digital Design and Computer Organization",
+                "this_will_unlock": "Data Structures Laboratory (BCSL305)",
+                "which_then_unlocks": "",
+            }
+        ],
+    }
+    result = advisor.validate_course_codes(data)
+    assert result["unlock_next"] == []
+
+
+def test_validate_course_codes_keeps_step_with_true_unlock_claim(advisor):
+    # BCS401's real prerequisites include "Data Structure and Applications (BCS304)".
+    data = {
+        "enroll_now": [],
+        "unlock_next": [
+            {
+                "complete_first": "Data Structure and Applications (BCS304)",
+                "this_will_unlock": "Analysis and Design of Algorithms (BCS401)",
                 "which_then_unlocks": "",
             }
         ],

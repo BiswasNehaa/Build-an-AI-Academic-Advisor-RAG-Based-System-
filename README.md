@@ -340,7 +340,7 @@ Temperature is set to 0 so outputs are deterministic and repeatable.
 
 **Important nuance — single-word vs multi-word keywords:**
 - Single-word keyword (e.g., `"python"`): Must appear **at least twice** as a whole word. This prevents a course that merely *mentions* Python in passing from being flagged as a Python course.
-- Multi-word keyword (e.g., `"machine learning"`): Checks the full phrase first, then checks significant individual words (length > 5).
+- Multi-word keyword (e.g., `"machine learning"`): Checks the full phrase first, then requires ALL significant individual words (length > 5) to be present together — matching on any single word would flag, say, a computer organization course as relevant just because its outcomes mention "machine instructions".
 
 **Returns `True` if ANY keyword matches** — OR logic, not AND. This is intentional because a course only needs to address one skill area to be worth considering.
 

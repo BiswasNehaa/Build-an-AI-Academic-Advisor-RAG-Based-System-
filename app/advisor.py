@@ -398,8 +398,10 @@ def is_career_relevant(course: dict, career_keywords: list[str]) -> bool:
     Check if a course is relevant to the student's career goal.
 
     Builds one searchable string from name + outcomes, then tests each keyword.
-    For multi-word keywords like "machine learning", also checks individual
-    significant words (length > 4) to handle variants like "learning" or "machine".
+    For multi-word keywords like "machine learning", requires ALL significant
+    words (length > 5) to be present — matching on any single word would flag
+    e.g. a computer organization course as "machine learning" relevant just
+    because its outcomes mention "machine instructions".
 
     If career_keywords is empty (unknown career), all courses pass through
     and the LLM applies its own judgment.
@@ -433,9 +435,16 @@ def is_career_relevant(course: dict, career_keywords: list[str]) -> bool:
             # Check full phrase first
             if kw_lower in searchable:
                 matched_keywords.append(kw)
-            # Then check significant individual words (len > 5 to be stricter)
-            elif any(word in searchable for word in kw_words if len(word) > 5):
-                matched_keywords.append(kw)
+            else:
+                # Fall back to requiring ALL significant words (len > 5) to be
+                # present — NOT just any one of them. A course whose outcomes
+                # mention "machine" (e.g. "machine instructions" in a computer
+                # organization course) is not a "machine learning" course;
+                # matching on any single word produced exactly that false
+                # positive in practice.
+                significant_words = [w for w in kw_words if len(w) > 5]
+                if significant_words and all(w in searchable for w in significant_words):
+                    matched_keywords.append(kw)
 
     return len(matched_keywords) > 0
        
@@ -606,6 +615,9 @@ HARD RULES:
 - Every course you name (course_id, complete_first, this_will_unlock,
   which_then_unlocks) MUST come from eligible_courses or blocked_courses
   below. Never invent a course code or name that isn't in that data.
+- Only claim "complete_first unlocks this_will_unlock" when a blocked
+  course's "reason" field literally lists complete_first as missing —
+  never infer a prerequisite relationship from course names/topics alone
 - If you don't have real data for "which_then_unlocks", set it to an empty
   string "" instead of guessing a plausible-sounding course
 """
@@ -628,18 +640,47 @@ def _extract_codes(text: str) -> list[str]:
     return re.findall(r'[A-Z]{2,6}\d{3}[A-Z0-9/]*', text.upper())
 
 
+def _resolve_course(text: str) -> dict | None:
+    """Best-effort match of free text (name and/or code) to a real course record."""
+    text_upper = text.upper()
+    codes = _extract_codes(text_upper)
+
+    for course in ALL_COURSES:
+        code = course['course_code'].upper()
+        if code in codes or any(part in codes for part in code.split('/')):
+            return course
+
+    for course in ALL_COURSES:
+        if course['name'].upper() in text_upper:
+            return course
+
+    return None
+
+
 def validate_course_codes(data: dict) -> dict:
     """
-    Strip any course the LLM invented that doesn't exist in ALL_COURSES.
+    Strip any course the LLM invented, and any "unlocks" claim that isn't
+    actually backed by the real prerequisite data.
 
     WHY THIS EXISTS:
-        The roadmap's third hop (unlock_next.which_then_unlocks) asks the LLM
-        to name a course beyond eligible_pool/excluded — data it was never
-        given. Prompt instructions alone don't reliably stop an LLM from
-        filling that gap with a plausible-sounding but fake course code
-        (e.g. "BCS500"). This applies the same principle used everywhere
-        else in the pipeline — Python verifies facts, the LLM only narrates —
-        to the LLM's OUTPUT, not just its input.
+        1. The roadmap's third hop (unlock_next.which_then_unlocks) asks the
+           LLM to name a course beyond eligible_pool/excluded — data it was
+           never given. Prompt instructions alone don't reliably stop an LLM
+           from filling that gap with a plausible-sounding but fake course
+           code (e.g. "BCS500").
+        2. Even when every course code in a roadmap step is real, the LLM is
+           never given the actual prerequisites data (see filter_candidates'
+           `candidate` dict) — so a "Finish: X -> Unlocks: Y" claim can pair
+           two real courses that have no actual prerequisite relationship.
+           Observed in practice: the LLM claimed finishing "Digital Design
+           and Computer Organization" (no prerequisites, and not listed as a
+           prerequisite of anything) would unlock "Data Structures
+           Laboratory" (whose real prerequisite is "C Programming Concepts").
+
+    Both are the same class of problem — the LLM narrating something it
+    wasn't given grounds for — so both are checked here, applying the
+    project's "Python verifies facts, LLM only narrates" principle to the
+    LLM's OUTPUT, not just its input.
     """
     valid_codes = set()
     for course in ALL_COURSES:
@@ -656,6 +697,23 @@ def validate_course_codes(data: dict) -> dict:
             for code in codes_found
         )
 
+    def is_real_prereq_link(prereq_text: str, target_text: str) -> bool:
+        """Is `target_text` actually listed as requiring `prereq_text`?"""
+        target_course = _resolve_course(target_text)
+        if not target_course:
+            return True   # can't identify the target course; nothing to check
+
+        prereq_course = _resolve_course(prereq_text)
+        prereq_identity = (
+            f"{prereq_course['course_code']} {prereq_course['name']}".upper()
+            if prereq_course else prereq_text.upper()
+        )
+
+        return any(
+            is_course_satisfied([prereq_identity], prereq_string)
+            for prereq_string in target_course.get('prerequisites', [])
+        )
+
     data['enroll_now'] = [
         c for c in data.get('enroll_now', [])
         if is_grounded(str(c.get('course_id', '')))
@@ -663,12 +721,20 @@ def validate_course_codes(data: dict) -> dict:
 
     verified_steps = []
     for step in data.get('unlock_next', []):
-        if not is_grounded(step.get('complete_first', '')):
+        complete_first   = step.get('complete_first', '')
+        this_will_unlock = step.get('this_will_unlock', '')
+
+        if not is_grounded(complete_first) or not is_grounded(this_will_unlock):
             continue
-        if not is_grounded(step.get('this_will_unlock', '')):
-            continue
-        if not is_grounded(step.get('which_then_unlocks', '')):
+        if not is_real_prereq_link(complete_first, this_will_unlock):
+            continue   # real courses, but the "unlocks" claim itself is false
+
+        which_then_unlocks = step.get('which_then_unlocks', '')
+        if not is_grounded(which_then_unlocks) or (
+            which_then_unlocks and not is_real_prereq_link(this_will_unlock, which_then_unlocks)
+        ):
             step['which_then_unlocks'] = ''
+
         verified_steps.append(step)
     data['unlock_next'] = verified_steps
 
