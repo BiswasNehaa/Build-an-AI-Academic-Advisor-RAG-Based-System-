@@ -164,6 +164,9 @@ def render_response(raw: str):
         st.code(raw)
         return
 
+    # Strip any course the LLM invented that isn't in the real catalog.
+    data = load_advisor_resources().validate_course_codes(data)
+
     # ── Encouraging message ───────────────────────────────────────────────────
     msg = data.get("message", "")
     if msg:

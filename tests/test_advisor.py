@@ -112,3 +112,73 @@ def test_enrich_completed_list_keeps_unresolvable_entries_as_typed(advisor):
     # and keep the original entry rather than dropping or crashing on it.
     result = advisor.enrich_completed_list(["Some Totally Unknown Course XYZ"])
     assert "Some Totally Unknown Course XYZ" in result
+
+
+# ── validate_course_codes ────────────────────────────────────────────────────
+# Regression coverage for a real bug: the LLM's roadmap "which_then_unlocks"
+# hop has no grounded data behind it and would invent plausible-looking but
+# fake course codes (e.g. "BCS500"). This is the Python-side safety net that
+# catches that instead of trusting the LLM's output at face value.
+
+def test_validate_course_codes_drops_fabricated_enroll_now_entry(advisor):
+    data = {
+        "enroll_now": [
+            {"course_id": "BCS304", "course_name": "Data Structure and Applications"},
+            {"course_id": "BCS999", "course_name": "Totally Made Up Course"},
+        ],
+        "unlock_next": [],
+    }
+    result = advisor.validate_course_codes(data)
+    ids = [c["course_id"] for c in result["enroll_now"]]
+    assert ids == ["BCS304"]
+
+
+def test_validate_course_codes_blanks_fabricated_third_hop_only(advisor):
+    data = {
+        "enroll_now": [],
+        "unlock_next": [
+            {
+                "complete_first": "Data Structure and Applications (BCS304)",
+                "this_will_unlock": "Analysis and Design of Algorithms (BCS401)",
+                "which_then_unlocks": "Advanced Algorithms (BCS500)",  # fabricated
+            }
+        ],
+    }
+    result = advisor.validate_course_codes(data)
+    assert len(result["unlock_next"]) == 1
+    step = result["unlock_next"][0]
+    assert step["complete_first"] == "Data Structure and Applications (BCS304)"
+    assert step["this_will_unlock"] == "Analysis and Design of Algorithms (BCS401)"
+    assert step["which_then_unlocks"] == ""
+
+
+def test_validate_course_codes_drops_step_with_fabricated_first_hop(advisor):
+    data = {
+        "enroll_now": [],
+        "unlock_next": [
+            {
+                "complete_first": "Totally Fake Prereq (BCS200)",
+                "this_will_unlock": "Analysis and Design of Algorithms (BCS401)",
+                "which_then_unlocks": "",
+            }
+        ],
+    }
+    result = advisor.validate_course_codes(data)
+    assert result["unlock_next"] == []
+
+
+def test_validate_course_codes_keeps_steps_without_any_code_claim(advisor):
+    # Free-text descriptions with no course code aren't verifiable against
+    # the catalog, so they pass through unchanged rather than being dropped.
+    data = {
+        "enroll_now": [],
+        "unlock_next": [
+            {
+                "complete_first": "Basics of C programming concepts",
+                "this_will_unlock": "Data Structure and Applications (BCS304)",
+                "which_then_unlocks": "",
+            }
+        ],
+    }
+    result = advisor.validate_course_codes(data)
+    assert len(result["unlock_next"]) == 1

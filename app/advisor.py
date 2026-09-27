@@ -603,6 +603,11 @@ HARD RULES:
 - Never include courses unrelated to {career_goal}
 - If enroll_now is empty (all courses blocked), still populate unlock_next fully
   so the student knows exactly what to do first to unlock their path
+- Every course you name (course_id, complete_first, this_will_unlock,
+  which_then_unlocks) MUST come from eligible_courses or blocked_courses
+  below. Never invent a course code or name that isn't in that data.
+- If you don't have real data for "which_then_unlocks", set it to an empty
+  string "" instead of guessing a plausible-sounding course
 """
 
     data = {
@@ -616,6 +621,58 @@ HARD RULES:
     ])
 
     return response.content
+
+
+def _extract_codes(text: str) -> list[str]:
+    """Pull anything that looks like a course code out of a free-text string."""
+    return re.findall(r'[A-Z]{2,6}\d{3}[A-Z0-9/]*', text.upper())
+
+
+def validate_course_codes(data: dict) -> dict:
+    """
+    Strip any course the LLM invented that doesn't exist in ALL_COURSES.
+
+    WHY THIS EXISTS:
+        The roadmap's third hop (unlock_next.which_then_unlocks) asks the LLM
+        to name a course beyond eligible_pool/excluded — data it was never
+        given. Prompt instructions alone don't reliably stop an LLM from
+        filling that gap with a plausible-sounding but fake course code
+        (e.g. "BCS500"). This applies the same principle used everywhere
+        else in the pipeline — Python verifies facts, the LLM only narrates —
+        to the LLM's OUTPUT, not just its input.
+    """
+    valid_codes = set()
+    for course in ALL_COURSES:
+        code = course['course_code'].upper()
+        valid_codes.add(code)
+        valid_codes.update(code.split('/'))
+
+    def is_grounded(text: str) -> bool:
+        codes_found = _extract_codes(text)
+        if not codes_found:
+            return True   # no code claim made — nothing to verify
+        return all(
+            code in valid_codes or any(part in valid_codes for part in code.split('/'))
+            for code in codes_found
+        )
+
+    data['enroll_now'] = [
+        c for c in data.get('enroll_now', [])
+        if is_grounded(str(c.get('course_id', '')))
+    ]
+
+    verified_steps = []
+    for step in data.get('unlock_next', []):
+        if not is_grounded(step.get('complete_first', '')):
+            continue
+        if not is_grounded(step.get('this_will_unlock', '')):
+            continue
+        if not is_grounded(step.get('which_then_unlocks', '')):
+            step['which_then_unlocks'] = ''
+        verified_steps.append(step)
+    data['unlock_next'] = verified_steps
+
+    return data
 
 
 # =============================================================================
@@ -633,6 +690,7 @@ def display_response(raw_response: str) -> None:
 
     try:
         data = json.loads(clean)
+        data = validate_course_codes(data)
 
         print(f"\n💬  {data.get('message', '')}\n")
 
