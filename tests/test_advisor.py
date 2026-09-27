@@ -253,3 +253,61 @@ def test_validate_course_codes_normalizes_bare_code_to_name_and_code(advisor):
     result = advisor.validate_course_codes(data)
     assert len(result["unlock_next"]) == 1
     assert result["unlock_next"][0]["this_will_unlock"] == "Data Structures Laboratory (BCSL305)"
+
+
+# ── validate_course_codes fallback ───────────────────────────────────────────
+# Regression test for a real bug: once the validator started actually
+# enforcing real prerequisite relationships, it could end up rejecting every
+# step the LLM proposed, leaving the student with an empty roadmap and no
+# guidance at all. The fallback rebuilds the roadmap directly from real
+# blocked-course data instead of showing nothing.
+
+def test_validate_course_codes_falls_back_when_everything_is_rejected(advisor):
+    data = {"enroll_now": [], "unlock_next": []}   # nothing survived validation
+    excluded = [
+        {
+            "course_id": "BCSL305",
+            "course_name": "Data Structures Laboratory",
+            "reason": "Missing: C Programming Concepts",
+        },
+        {
+            "course_id": "BCS304",
+            "course_name": "Data Structure and Applications",
+            "reason": "Missing: Basics of C programming concepts",
+        },
+    ]
+    result = advisor.validate_course_codes(data, excluded)
+    assert len(result["unlock_next"]) == 2
+    step = result["unlock_next"][0]
+    assert step["complete_first"] == "C Programming Concepts"
+    assert step["this_will_unlock"] == "Data Structures Laboratory (BCSL305)"
+
+
+def test_validate_course_codes_no_fallback_when_excluded_is_empty(advisor):
+    data = {"enroll_now": [], "unlock_next": []}
+    result = advisor.validate_course_codes(data, excluded=[])
+    assert result["unlock_next"] == []
+
+
+def test_validate_course_codes_prefers_real_llm_steps_over_fallback(advisor):
+    data = {
+        "enroll_now": [],
+        "unlock_next": [
+            {
+                "complete_first": "Data Structure and Applications (BCS304)",
+                "this_will_unlock": "Analysis and Design of Algorithms (BCS401)",
+                "which_then_unlocks": "",
+            }
+        ],
+    }
+    excluded = [
+        {
+            "course_id": "BCSL305",
+            "course_name": "Data Structures Laboratory",
+            "reason": "Missing: C Programming Concepts",
+        }
+    ]
+    result = advisor.validate_course_codes(data, excluded)
+    # The LLM's own (valid) step should be kept, not replaced by the fallback.
+    assert len(result["unlock_next"]) == 1
+    assert "Analysis and Design of Algorithms" in result["unlock_next"][0]["this_will_unlock"]

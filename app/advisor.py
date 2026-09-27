@@ -632,7 +632,14 @@ HARD RULES:
         ("user",   f"Build the roadmap from this data: {json.dumps(data)}")
     ])
 
-    return response.content
+    clean = re.sub(r'```json|```', '', response.content).strip()
+    try:
+        parsed = json.loads(clean)
+    except json.JSONDecodeError:
+        return response.content   # let the display layer handle raw fallback
+
+    parsed = validate_course_codes(parsed, excluded)
+    return json.dumps(parsed)
 
 
 def _extract_codes(text: str) -> list[str]:
@@ -676,7 +683,42 @@ def _format_course_reference(text: str) -> str:
     return " + ".join(formatted) if formatted else text
 
 
-def validate_course_codes(data: dict) -> dict:
+def _synthesize_unlock_steps(excluded: list[dict]) -> list[dict]:
+    """
+    Build roadmap steps directly from real blocked-course data, bypassing
+    the LLM's narrative entirely.
+
+    WHY THIS EXISTS:
+        validate_course_codes can end up rejecting every step the LLM
+        proposed (e.g. it invented every relationship). An empty roadmap is
+        a worse outcome than a plain but correct one — this reconstructs the
+        "Finish X -> Unlocks Y" steps straight from each blocked course's
+        `reason` field, which is itself built from the real `prerequisites`
+        data in filter_candidates(). Nothing here can be wrong because
+        nothing here is narrated.
+    """
+    steps = []
+    for course in excluded:
+        reason = course.get('reason', '')
+        missing = reason.removeprefix('Missing: ')
+        missing_parts = [m.strip() for m in missing.split(',') if m.strip()]
+        if not missing_parts:
+            continue
+
+        steps.append({
+            "complete_first": " + ".join(
+                _format_course_reference(m) for m in missing_parts
+            ),
+            "this_will_unlock": _format_course_reference(
+                f"{course.get('course_name', '')} ({course.get('course_id', '')})"
+            ),
+            "which_then_unlocks": "",
+        })
+
+    return steps
+
+
+def validate_course_codes(data: dict, excluded: list[dict] | None = None) -> dict:
     """
     Strip any course the LLM invented, and any "unlocks" claim that isn't
     actually backed by the real prerequisite data.
@@ -700,6 +742,11 @@ def validate_course_codes(data: dict) -> dict:
     wasn't given grounds for — so both are checked here, applying the
     project's "Python verifies facts, LLM only narrates" principle to the
     LLM's OUTPUT, not just its input.
+
+    If `excluded` is provided and validation strips every unlock_next step
+    the LLM proposed, falls back to steps synthesized directly from the real
+    blocked-course data (see _synthesize_unlock_steps) rather than leaving
+    the student with an empty roadmap.
     """
     valid_codes = set()
     for course in ALL_COURSES:
@@ -765,6 +812,9 @@ def validate_course_codes(data: dict) -> dict:
 
         verified_steps.append(step)
     data['unlock_next'] = verified_steps
+
+    if not data['unlock_next'] and excluded:
+        data['unlock_next'] = _synthesize_unlock_steps(excluded)
 
     return data
 
