@@ -25,13 +25,18 @@ import os
 import re
 import json
 import time
+import logging
 
 from dotenv import load_dotenv
 load_dotenv()
 
+logger = logging.getLogger(__name__)
+
 from langchain_groq import ChatGroq
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
+
+from config import MAX_CREDITS
 
 
 # =============================================================================
@@ -49,11 +54,6 @@ embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0)
 
 # FAISS vector store — built once by ingest.py, loaded read-only here.
-"""vector_db = FAISS.load_local(
-    "faiss_index",
-    embeddings,
-    allow_dangerous_deserialization=True   # safe: we built this file ourselves
-)"""
 FAISS_INDEX_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'faiss_index')
 
 vector_db = FAISS.load_local(
@@ -63,21 +63,15 @@ vector_db = FAISS.load_local(
 )
 
 # Full course catalog — used by enrichment to map names → course codes.
-#COURSES_JSON_PATH = '../Data/courses.json'
 COURSES_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Data', 'courses.json')
 with open(COURSES_JSON_PATH, 'r') as f:
     ALL_COURSES = json.load(f)
 
 # Career skills map — maps career titles to required skill keywords.
 # Adding new careers requires only editing career.json, zero code changes.
-#CAREER_JSON_PATH = '../Data/career.json'
 CAREER_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Data', 'career.json')
 with open(CAREER_JSON_PATH, 'r') as f:
     CAREER_DATA = json.load(f)
-
-# Maximum credits a student can register per semester.
-# Validated at input time; used to cap enroll_now suggestions.
-MAX_CREDITS = 30
 
 
 # =============================================================================
@@ -112,10 +106,10 @@ def get_career_keywords(career_goal: str) -> list[str]:
 
     # Require at least one meaningful word overlap
     if best_score >= 1 and best_match:
-        print(f"[Career Matched] '{career_goal}' → '{best_match}'")
+        logger.debug("Career matched: '%s' -> '%s'", career_goal, best_match)
         return CAREER_DATA[best_match]['required_skills']
 
-    print(f"[Career] No match found for '{career_goal}'. LLM will infer relevance.")
+    logger.debug("No career match found for '%s'. LLM will infer relevance.", career_goal)
     return []
 
 
@@ -160,7 +154,7 @@ def enrich_completed_list(completed_names: list[str]) -> list[str]:
             if name_upper == course_code:
                 if course_code not in enriched:
                     enriched.append(course_code)
-                print(f"[Python ✓ Exact Code]  '{name}' → {course_code}")
+                logger.debug("Exact code match: '%s' -> %s", name, course_code)
                 found = True
                 break
 
@@ -168,7 +162,7 @@ def enrich_completed_list(completed_names: list[str]) -> list[str]:
             if name_upper == course_name:
                 if course_code not in enriched:
                     enriched.append(course_code)
-                print(f"[Python ✓ Exact Name]  '{name}' → {course_code}")
+                logger.debug("Exact name match: '%s' -> %s", name, course_code)
                 found = True
                 break
 
@@ -177,37 +171,34 @@ def enrich_completed_list(completed_names: list[str]) -> list[str]:
             if len(name_upper) > 6 and name_upper in course_name:
                 if course_code not in enriched:
                     enriched.append(course_code)
-                print(f"[Python ✓ Substring]   '{name}' → {course_code}")
+                logger.debug("Substring match: '%s' -> %s", name, course_code)
                 found = True
                 break
-            
+
             # Match 4: Student typed a partial code that appears inside the full code
             # e.g. "BPLCK105B" is contained in "BPLCK105B/205B"
             if len(name_upper) >= 6 and name_upper in course_code:
                 if course_code not in enriched:
                     enriched.append(course_code)
-                print(f"[Python ✓ Partial Code] '{name}' → {course_code}")
+                logger.debug("Partial code match: '%s' -> %s", name, course_code)
                 found = True
                 break
-
 
             # Match 5: Full code contains the student's input as the primary part
             # e.g. "BETCK105H/205H" should match if student types "BETCK105H"
             if '/' in course_code and name_upper == course_code.split('/')[0]:
                 if course_code not in enriched:
                     enriched.append(course_code)
-                print(f"[Python ✓ Split Code]  '{name}' → {course_code}")
+                logger.debug("Split code match: '%s' -> %s", name, course_code)
                 found = True
                 break
-            
-            
+
         if not found:
             unmatched.append(name)   # hand off to LLM
 
     # ── Phase 2: LLM semantic matching for unresolved entries ─────────────────
     if unmatched:
-        print(f"\n[LLM Enrichment] {len(unmatched)} entries need semantic matching: "
-              f"{unmatched}")
+        logger.debug("%d entries need LLM semantic matching: %s", len(unmatched), unmatched)
 
         # Compact catalog — only code + name to keep prompt size small.
         # No descriptions or outcomes needed here.
@@ -263,31 +254,27 @@ OUTPUT:
                         all_matches[entry] = code.upper()
 
             except json.JSONDecodeError:
-                print(f"[LLM Enrichment] Batch {batch_num+1}: Could not parse response.")
+                logger.warning("LLM enrichment batch %d: could not parse response.", batch_num + 1)
             except Exception as e:
-                print(f"[LLM Enrichment] Batch {batch_num+1} failed: {e}")
+                logger.warning("LLM enrichment batch %d failed: %s", batch_num + 1, e)
 
         # Apply matched codes to enriched list
         for entry, code in all_matches.items():
             if code not in enriched:
                 enriched.append(code)
-            print(f"[LLM  ✓ Matched]   '{entry}' → {code}")
+            logger.debug("LLM matched: '%s' -> %s", entry, code)
 
-        # Report anything that even the LLM couldn't match
+        # Report anything that even the LLM couldn't match — stored as typed,
+        # still used for substring checks, but flagged for the "forgot" flow.
         llm_unmatched = [e for e in unmatched if e not in all_matches]
         for entry in llm_unmatched:
-            print(f"[No Match]         '{entry}' — stored as typed, "
-                  f"will still be used for substring checks")
-            
-        # In enrich_completed_list, after the LLM no-match case:
-        llm_unmatched = [e for e in unmatched if e not in all_matches]
-        for entry in llm_unmatched:
-            print(f"[⚠️  Warning] '{entry}' could not be matched to any course.")
-            print(f"             Please check the spelling. If this was a completed")
-            print(f"             course, type 'forgot' to re-enter it correctly.")
+            logger.warning(
+                "'%s' could not be matched to any course. Check spelling, or "
+                "re-enter it via 'forgot' if it was a completed course.", entry
+            )
 
     else:
-        print("[Enrichment] All entries matched by Python. LLM call skipped.")
+        logger.debug("All entries matched by Python. LLM call skipped.")
 
     return list(set(enriched))
 
@@ -439,9 +426,7 @@ def is_career_relevant(course: dict, career_keywords: list[str]) -> bool:
             #it is actually about this topic ,not mentioning it 
             if len(matches)>=2:
                 matched_keywords.append(kw)
-                ###############
-                print(f"[Relevance Detail] '{kw}' found {len(matches)}x"
-                      f"in {course['course_id']}")
+                logger.debug("'%s' found %dx in %s", kw, len(matches), course['course_id'])
         
         else:
             # Multi-word keyword e.g. "machine learning"
@@ -472,8 +457,7 @@ def deduplicate_pool(eligible_pool: list[dict]) -> list[dict]:
             seen_names.add(name_key)
             unique.append(course)
         else:
-            print(f"[Dedupe] Removed duplicate: "
-                  f"{course['course_id']} — {course['course_name']}")
+            logger.debug("Removed duplicate: %s - %s", course['course_id'], course['course_name'])
 
     return unique
 
@@ -500,16 +484,14 @@ def filter_candidates(docs: list, completed_upper: list[str],
     eligible_pool  = []
     excluded       = []
     credits_so_far = 0
-    
-    #########################3
-    #watch=['BCS301','BCS358A','BCS302','BCS2303']
-    
-    # Short docs to process low prerequisite courses first _______________________________________
-    docs_sorted=sorted(
+
+    # Sort so zero/low-prerequisite courses are processed first — they're
+    # more likely to make it into the pool before the credit cap is hit.
+    docs_sorted = sorted(
         docs,
         key=lambda d: (
-            len(d.metadata.get('prerequisites',[])), #fewer pre-req first
-            d.metadata.get('credits',0)   #smaller credits next
+            len(d.metadata.get('prerequisites', [])),  # fewer prereqs first
+            d.metadata.get('credits', 0)                # smaller credits next
         )
     )
     for doc in docs_sorted:
@@ -518,8 +500,6 @@ def filter_candidates(docs: list, completed_upper: list[str],
         prereqs     = doc.metadata.get('prerequisites', [])
         credits     = doc.metadata.get('credits', 0)
         outcomes    = doc.metadata.get('outcomes', 'No outcomes listed.')
-        
-        
 
         # ── Check 1: Already completed? ───────────────────────────────────────
         identity = f"{course_id} {course_name}"
@@ -553,9 +533,6 @@ def filter_candidates(docs: list, completed_upper: list[str],
         }
         if not is_career_relevant(candidate, career_keywords):
             continue
-        
-        # Temporary debug — add inside filter_candidates after Check 4
-        print(f"[Relevance Check] {course_id}: {is_career_relevant(candidate, career_keywords)}")
 
         # ── Check 5: Credit cap ────────────────────────────────────────────────
         # Don't recommend more credits than the student can take this semester.
@@ -716,11 +693,11 @@ def academic_advisor(query: str, completed_courses: list[str],
     eligible_pool, excluded = filter_candidates(
         candidate_docs, completed_upper, career_keywords, credit_limit
     )
-    all_ids = [d.metadata.get('course_id') for d in candidate_docs]
-    print(f"\n[Debug] Was BCS301 retrieved? {'BCS301' in all_ids}")
-    print(f"[Debug] Was BCS358A retrieved? {'BCS358A' in all_ids}")
-    print(f"[Debug] Eligible pool: {[c['course_id'] for c in eligible_pool]}")
-    print(f"[Debug] Total retrieved: {len(candidate_docs)}")
+    logger.debug(
+        "Retrieved %d candidates, %d eligible: %s",
+        len(candidate_docs), len(eligible_pool),
+        [c['course_id'] for c in eligible_pool]
+    )
 
     # Stage E: LLM builds the roadmap
     raw_response = build_llm_response(
@@ -736,6 +713,8 @@ def academic_advisor(query: str, completed_courses: list[str],
 # =============================================================================
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG, format="%(message)s")
+
     print("\n" + "=" * 60)
     print("       Senior Academic Advisor")
     print("=" * 60 + "\n")
