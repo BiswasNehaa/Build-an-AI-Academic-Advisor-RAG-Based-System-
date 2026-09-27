@@ -20,6 +20,8 @@ import streamlit as st
 import json
 import re
 
+from config import MAX_CREDITS
+
 # ── Page config (must be first Streamlit call) ────────────────────────────────
 st.set_page_config(
     page_title="Academic Advisor",
@@ -116,7 +118,7 @@ with st.sidebar:
 
     credit_limit = st.slider(
         "Max credits this semester",
-        min_value=1, max_value=30, value=16, step=1,
+        min_value=1, max_value=MAX_CREDITS, value=16, step=1,
     )
 
     # ── Mid-session: add forgotten courses ───────────────────────────────────
