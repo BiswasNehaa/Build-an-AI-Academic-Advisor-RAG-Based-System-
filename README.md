@@ -508,6 +508,14 @@ streamlit run app/app.py
 python app/advisor.py
 ```
 
+### 7. Run Tests
+
+```bash
+pytest tests/
+```
+
+Tests cover the deterministic filtering/matching logic (`is_course_satisfied`, `is_career_relevant`, `enrich_completed_list`) with the embedding model, FAISS index, and Groq API mocked out, so they run fast and offline.
+
 ---
 
 ## 📥 Example Input & Output
