@@ -233,3 +233,23 @@ def test_validate_course_codes_keeps_step_with_true_unlock_claim(advisor):
     }
     result = advisor.validate_course_codes(data)
     assert len(result["unlock_next"]) == 1
+
+
+def test_validate_course_codes_normalizes_bare_code_to_name_and_code(advisor):
+    # Regression test: the LLM sometimes returns a bare code for
+    # this_will_unlock/which_then_unlocks (e.g. just "BCSL305") even though
+    # the prompt asks for "name (code)" -- a bare code isn't meaningful to a
+    # student who doesn't have the catalog memorized, so Python normalizes it.
+    data = {
+        "enroll_now": [],
+        "unlock_next": [
+            {
+                "complete_first": "C Programming Concepts",
+                "this_will_unlock": "BCSL305",
+                "which_then_unlocks": "",
+            }
+        ],
+    }
+    result = advisor.validate_course_codes(data)
+    assert len(result["unlock_next"]) == 1
+    assert result["unlock_next"][0]["this_will_unlock"] == "Data Structures Laboratory (BCSL305)"

@@ -657,6 +657,25 @@ def _resolve_course(text: str) -> dict | None:
     return None
 
 
+def _format_course_reference(text: str) -> str:
+    """
+    Rewrite a course reference to a consistent "Name (CODE)" format.
+
+    The prompt asks the LLM for "course name (code)" but it doesn't reliably
+    include both — a bare code isn't meaningful to a student who doesn't have
+    the catalog memorized. Handles "CourseA + CourseB" combined prerequisites
+    by formatting each part separately.
+    """
+    parts = [p.strip() for p in text.split('+')]
+    formatted = []
+    for part in parts:
+        if not part:
+            continue
+        course = _resolve_course(part)
+        formatted.append(f"{course['name']} ({course['course_code']})" if course else part)
+    return " + ".join(formatted) if formatted else text
+
+
 def validate_course_codes(data: dict) -> dict:
     """
     Strip any course the LLM invented, and any "unlocks" claim that isn't
@@ -733,7 +752,16 @@ def validate_course_codes(data: dict) -> dict:
         if not is_grounded(which_then_unlocks) or (
             which_then_unlocks and not is_real_prereq_link(this_will_unlock, which_then_unlocks)
         ):
-            step['which_then_unlocks'] = ''
+            which_then_unlocks = ''
+
+        # Normalize every surviving field to "Name (CODE)" — the LLM doesn't
+        # reliably include both even when the prompt asks for it, and a bare
+        # code isn't meaningful to a student who doesn't have it memorized.
+        step['complete_first']      = _format_course_reference(complete_first)
+        step['this_will_unlock']    = _format_course_reference(this_will_unlock)
+        step['which_then_unlocks']  = (
+            _format_course_reference(which_then_unlocks) if which_then_unlocks else ''
+        )
 
         verified_steps.append(step)
     data['unlock_next'] = verified_steps
