@@ -61,7 +61,7 @@ This project solves all of that by combining the **reasoning power of an LLM** w
 | **LangChain** | RAG orchestration framework | Makes it easy to connect embeddings, vector stores, and LLMs in a pipeline |
 | **FAISS** | Vector database for semantic search | Fast, local, no cloud needed; perfect for a fixed course catalog |
 | **HuggingFace `all-MiniLM-L6-v2`** | Embedding model | Small (80MB), fast, and surprisingly accurate for semantic matching; free to use |
-| **Groq + LLaMA 3.3 70B** | The LLM for reasoning and roadmap generation | Groq provides extremely fast inference; LLaMA 3.3 70B is powerful enough to generate coherent academic advice |
+| **Groq + GPT-OSS 120B** | The LLM for reasoning and roadmap generation | Groq provides extremely fast inference; GPT-OSS 120B is powerful enough to generate coherent academic advice (originally built on Llama 3.3 70B, migrated after Groq deprecated it for free/developer-tier use in August 2026) |
 | **Streamlit** | Web UI | Lets you build a clean web app in pure Python — no HTML/CSS/JS needed |
 | **python-dotenv** | API key management | Keeps secrets out of source code |
 | **JSON files** | Data storage for courses and careers | Simple, human-readable, easy to edit without a database |
@@ -107,7 +107,7 @@ Student Input (career goal + completed courses + credit limit + question)
                   ▼
 ┌─────────────────────────────────────────┐
 │  STAGE E: LLM Roadmap Generation        │
-│  Filtered pool → LLaMA 3.3 70B          │
+│  Filtered pool → GPT-OSS 120B           │
 │  → Structured JSON roadmap              │
 └─────────────────┬───────────────────────┘
                   │
@@ -222,7 +222,7 @@ Both results are merged and deduplicated by course ID.
 
 ### Stage E — LLM Roadmap Generation
 
-**What it does:** Takes the filtered pool of eligible and blocked courses and asks LLaMA 3.3 70B to build a structured JSON roadmap.
+**What it does:** Takes the filtered pool of eligible and blocked courses and asks GPT-OSS 120B to build a structured JSON roadmap.
 
 **What the LLM is responsible for (and nothing else):**
 - Ranking the eligible courses by career impact
@@ -355,7 +355,7 @@ Temperature is set to 0 so outputs are deterministic and repeatable.
 ---
 
 #### `build_llm_response(eligible_pool, excluded, career_goal, career_keywords) → str`
-**What:** Constructs the system prompt and user prompt, sends them to LLaMA 3.3 70B via Groq, and returns the raw JSON string.
+**What:** Constructs the system prompt and user prompt, sends them to GPT-OSS 120B via Groq, and returns the raw JSON string.
 
 **System prompt enforces:**
 - Strict JSON schema (no improvised keys)
@@ -581,4 +581,4 @@ python app/advisor.py
 
 ---
 
-*Built with LangChain · FAISS · HuggingFace Embeddings · Groq (LLaMA 3.3 70B) · Streamlit*
+*Built with LangChain · FAISS · HuggingFace Embeddings · Groq (GPT-OSS 120B) · Streamlit*

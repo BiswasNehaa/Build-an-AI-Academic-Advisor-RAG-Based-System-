@@ -96,7 +96,7 @@ st.markdown("""
 # =============================================================================
 with st.sidebar:
     st.title("🎓 Academic Advisor")
-    st.caption("Powered by RAG + LLaMA 3.3 70B")
+    st.caption("Powered by RAG + GPT-OSS 120B")
     st.divider()
 
     st.subheader("Your Profile")
@@ -287,4 +287,4 @@ else:
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.divider()
-st.caption("Academic Advisor · RAG pipeline · LLaMA 3.3 70B via Groq · FAISS + HuggingFace embeddings")
+st.caption("Academic Advisor · RAG pipeline · GPT-OSS 120B via Groq · FAISS + HuggingFace embeddings")

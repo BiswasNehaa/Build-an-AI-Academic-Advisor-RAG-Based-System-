@@ -44,7 +44,9 @@ from langchain_huggingface import HuggingFaceEmbeddings
 embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 # LLM — temperature=0 for deterministic, repeatable advice.
-llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
+# NOTE: llama-3.3-70b-versatile was deprecated by Groq for free/developer-tier
+# usage on 2026-08-16. openai/gpt-oss-120b is Groq's recommended replacement.
+llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0)
 
 # FAISS vector store — built once by ingest.py, loaded read-only here.
 """vector_db = FAISS.load_local(
