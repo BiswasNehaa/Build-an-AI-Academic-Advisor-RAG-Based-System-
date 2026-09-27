@@ -1,6 +1,12 @@
-# 🎓 AI Academic Advisor — Complete Project Documentation
+# 🎓 AI Academic Advisor
 
 > A RAG-based intelligent system that recommends courses to students based on their career goals, completed courses, and credit constraints — with zero hallucinations.
+
+**🔗 [Live demo](https://ai-academic-rag-based-system.streamlit.app/)**
+
+**The problem:** course catalogs are huge, prerequisite chains are tangled, and generic chatbots hallucinate courses that don't exist.
+**The approach:** all hard constraints (prerequisites, credit limits, career relevance) are enforced by deterministic Python filtering *before* the LLM ever sees the data — the LLM only ranks and explains an already-valid set of courses, so it can't recommend something the student isn't eligible for.
+**Stack:** Python · LangChain · FAISS · HuggingFace embeddings · Groq (GPT-OSS 120B) · Streamlit
 
 ---
 
@@ -142,7 +148,7 @@ AI-Academic-Advisor/
 │   └── index.pkl
 │
 ├── .env                ← Your API keys (never commit to git)
-└── req.txt             ← Python dependencies
+└── requirements.txt    ← Python dependencies
 ```
 
 ---
@@ -474,7 +480,7 @@ source venv/bin/activate
 
 ### 3. Install Dependencies
 ```bash
-pip install -r req.txt
+pip install -r requirements.txt
 ```
 
 ### 4. Set Up API Keys
