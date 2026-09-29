@@ -672,8 +672,12 @@ def _format_course_reference(text: str) -> str:
     include both — a bare code isn't meaningful to a student who doesn't have
     the catalog memorized. Handles "CourseA + CourseB" combined prerequisites
     by formatting each part separately.
+
+    Splits only on a "+" surrounded by whitespace — a bare split('+') would
+    shred a real course name like "Object Oriented Programming with C++"
+    into garbage, since C++ itself contains literal "+" characters.
     """
-    parts = [p.strip() for p in text.split('+')]
+    parts = [p.strip() for p in re.split(r'\s\+\s', text)]
     formatted = []
     for part in parts:
         if not part:

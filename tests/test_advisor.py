@@ -311,3 +311,26 @@ def test_validate_course_codes_prefers_real_llm_steps_over_fallback(advisor):
     # The LLM's own (valid) step should be kept, not replaced by the fallback.
     assert len(result["unlock_next"]) == 1
     assert "Analysis and Design of Algorithms" in result["unlock_next"][0]["this_will_unlock"]
+
+
+def test_validate_course_codes_does_not_shred_course_names_containing_plus(advisor):
+    # Regression test: a bare text.split('+') mangled "Object Oriented
+    # Programming with C++" (which contains literal "+" characters) into
+    # duplicated garbage like "...with C + ...with C + ...with C++ (CODE)".
+    # The "CourseA + CourseB" combinator must only split on " + " (with
+    # surrounding whitespace), not on "+" wherever it appears.
+    data = {
+        "enroll_now": [],
+        "unlock_next": [
+            {
+                "complete_first": "Basics of C Programming",
+                "this_will_unlock": "Object Oriented Programming with C++ (BCS306B)",
+                "which_then_unlocks": "",
+            }
+        ],
+    }
+    result = advisor.validate_course_codes(data)
+    assert len(result["unlock_next"]) == 1
+    this_will_unlock = result["unlock_next"][0]["this_will_unlock"]
+    assert this_will_unlock == "Object Oriented Programming with C++ (BCS306B)"
+    assert this_will_unlock.count("Object Oriented Programming") == 1
