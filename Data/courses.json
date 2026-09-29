@@ -515,7 +515,7 @@
     "course_code": "BCS304",
     "name": "Data Structure and Applications",
     "description": "Explain fundamentals of data structures and their applications. Illustrate representation of stack, queues, linked lists, trees and graphs. Design and develop solutions using linear and nonlinear data structures, and introduce advanced concepts like Hashing and Optimal Binary Search Trees.",
-    "prerequisites": ["Basics of C programming concepts"],
+    "prerequisites": ["Introduction to C Programming (BPOPS102/203)"],
     "credits": 3,
     "tags": [
       "data structures",
@@ -547,7 +547,7 @@
     "course_code": "BCSL305",
     "name": "Data Structures Laboratory",
     "description": "Practical experience in design, development, implementation, and analysis of dynamic memory management, linear data structures (stacks, queues, lists), and non-linear data structures (trees, graphs).",
-    "prerequisites": ["C Programming Concepts"],
+    "prerequisites": ["Introduction to C Programming (BPOPS102/203)"],
     "credits": 1,
     "tags": [
       "data structures",
@@ -586,7 +586,7 @@
     "course_code": "BCS306B",
     "name": "Object Oriented Programming with C++",
     "description": "Introduces the concepts of Object-Oriented Programming (OOP) using C++. Covers the transition from procedural to object-oriented paradigms, including classes, objects, inheritance, polymorphism, and exception handling.",
-    "prerequisites": ["Basics of C Programming"],
+    "prerequisites": ["Introduction to C Programming (BPOPS102/203)"],
     "credits": 3,
     "tags": [
       "c++",
@@ -678,7 +678,7 @@
     "course_code": "BCS306A",
     "name": "Object Oriented Programming with Java",
     "description": "Comprehensive study of Object-Oriented Programming (OOP) principles using Java. Covers classes, objects, inheritance, polymorphism, interfaces, and packages, alongside advanced features like exception handling and multithreading.",
-    "prerequisites": ["Introduction to C Programming (BPOPS103/203)"],
+    "prerequisites": ["Introduction to C Programming (BPOPS102/203)"],
     "credits": 3,
     "tags": [
       "java",
@@ -801,7 +801,7 @@
     "course_code": "BCS402",
     "name": "Microcontroller and Embedded Systems",
     "description": "Explores the architecture and programming of microcontrollers, focusing on the ARM Cortex-M series. Covers embedded system design, hardware-software co-design, interfacing with sensors/actuators, and real-time operating system (RTOS) concepts.",
-    "prerequisites": ["Digital Design and Computer Organization (BCS302)", "Introduction to C Programming (BPOPS103/203)"],
+    "prerequisites": ["Digital Design and Computer Organization (BCS302)", "Introduction to C Programming (BPOPS102/203)"],
     "credits": 3,
     "tags": [
       "microcontrollers",
@@ -832,7 +832,7 @@
     "course_code": "BCSL404",
     "name": "Analysis and Design of Algorithms Laboratory",
     "description": "Practical implementation and performance analysis of algorithms. Includes programs on sorting, searching, greedy techniques, dynamic programming, and backtracking. Focuses on measuring time complexity and understanding algorithmic efficiency.",
-    "prerequisites": ["Data Structure and Applications (BCS304)", "Design and Analysis of Algorithms (BCS401)"],
+    "prerequisites": ["Data Structure and Applications (BCS304)", "Analysis and Design of Algorithms (BCS401)"],
     "credits": 1,
     "tags": [
       "algorithms",
@@ -1082,7 +1082,7 @@
     "course_code": "BCS501",
     "name": "Software Engineering and Project Management",
     "description": "Introduces the software development lifecycle (SDLC) and various process models. Covers requirement engineering, software design principles, testing strategies, and project management techniques including estimation, scheduling, and risk management.",
-    "prerequisites": ["Object Oriented Programming (BCS306A/BCS405D)", "Data Structures and Applications (BCS304)"],
+    "prerequisites": ["Object Oriented Programming (BCS306A/BCS306B)", "Data Structure and Applications (BCS304)"],
     "credits": 3,
     "tags": [
       "software engineering",
@@ -1210,7 +1210,7 @@
     "course_code": "BCS515B",
     "name": "Principles of Artificial Intelligence",
     "description": "Introduces the fundamental concepts and techniques of AI. Covers problem-solving through search, knowledge representation using logic, reasoning under uncertainty, and the basics of machine learning and natural language processing.",
-    "prerequisites": ["Design and Analysis of Algorithms (BCS401)", "Discrete Mathematical Structures (BCS405A/B)"],
+    "prerequisites": ["Analysis and Design of Algorithms (BCS401)", "Discrete Mathematical Structures (BCS405A/B)"],
     "credits": 3,
     "tags": [
       "artificial intelligence",
@@ -1240,7 +1240,7 @@
     "course_code": "BCS515C",
     "name": "Unix System Programming",
     "description": "Focuses on the programming interface of the Unix operating system. Covers file I/O, process management, inter-process communication (IPC), signal handling, and the relationship between the application and the Unix kernel.",
-    "prerequisites": ["Operating Systems (BCS303)", "C Programming"],
+    "prerequisites": ["Operating Systems (BCS303)", "Introduction to C Programming (BPOPS102/203)"],
     "credits": 3,
     "tags": [
       "unix",
@@ -1302,7 +1302,7 @@
     "course_code": "BAIL504",
     "name": "Data Visualization Laboratory",
     "description": "Practical session focused on using modern tools to represent data visually. Covers exploratory data analysis (EDA), static and interactive plotting, geospatial visualization, and dashboard creation using Python libraries (Matplotlib, Seaborn, Plotly) or BI tools (Tableau/PowerBI).",
-    "prerequisites": ["Principles of Artificial Intelligence (BCS515B)", "Database Management System (BCS403)"],
+    "prerequisites": ["Principles of Artificial Intelligence (BCS515B)", "Database Management Systems (BCS403)"],
     "credits": 1,
     "tags": [
       "data visualization",
@@ -1338,7 +1338,7 @@
     "course_code": "BAI515A",
     "name": "Computer Vision",
     "description": "An introduction to the concepts and applications of computer vision. Covers image formation, image processing techniques, feature extraction, object detection, and the integration of deep learning for advanced visual recognition tasks.",
-    "prerequisites": ["Linear Algebra (BCS405D)", "Design and Analysis of Algorithms (BCS401)", "Data Visualization (BAIL504)"],
+    "prerequisites": ["Linear Algebra (BCS405D)", "Analysis and Design of Algorithms (BCS401)", "Data Visualization Laboratory (BAIL504)"],
     "credits": 3,
     "tags": [
       "computer vision",
@@ -1431,7 +1431,7 @@
     "course_code": "BCS602",
     "name": "Machine Learning",
     "description": "Comprehensive introduction to the machine learning pipeline, from data preprocessing to model evaluation. Covers supervised learning (regression, classification), unsupervised learning (clustering, dimensionality reduction), and ensemble methods.",
-    "prerequisites": ["Linear Algebra (BCS405D)", "Design and Analysis of Algorithms (BCS401)", "Principles of Artificial Intelligence (BCS515B)"],
+    "prerequisites": ["Linear Algebra (BCS405D)", "Analysis and Design of Algorithms (BCS401)", "Principles of Artificial Intelligence (BCS515B)"],
     "credits": 4,
     "tags": [
       "machine learning",
@@ -1462,7 +1462,7 @@
     "course_code": "BCSL606",
     "name": "Machine Learning Laboratory",
     "description": "Practical implementation of fundamental machine learning algorithms. Covers data preprocessing, supervised learning (Regression, SVM, Decision Trees, MLP), unsupervised learning (K-Means), and ensemble techniques using Python.",
-    "prerequisites": ["Machine Learning Theory (BCS602)", "Python Programming"],
+    "prerequisites": ["Machine Learning (BCS602)", "Python Programming"],
     "credits": 1,
     "tags": [
       "machine learning",
@@ -1528,7 +1528,7 @@
     "course_code": "BCS613B",
     "name": "Computer Vision",
     "description": "Explores advanced techniques for extracting meaningful information from digital images and videos. Focuses on the integration of Deep Learning (CNNs), object detection frameworks (YOLO, R-CNN), and real-world applications in medical imaging and autonomous systems.",
-    "prerequisites": ["Machine Learning (BCS602)", "Linear Algebra (BCS405D)", "Design and Analysis of Algorithms (BCS401)"],
+    "prerequisites": ["Machine Learning (BCS602)", "Linear Algebra (BCS405D)", "Analysis and Design of Algorithms (BCS401)"],
     "credits": 3,
     "tags": [
       "computer vision",
@@ -1559,7 +1559,7 @@
     "course_code": "BIS613B",
     "name": "Internet of Things",
     "description": "Explores the end-to-end architecture of IoT systems. Covers sensor technology, communication protocols (MQTT, CoAP), microcontrollers (Arduino, Raspberry Pi), cloud integration, and the security challenges of connecting physical devices to the internet.",
-    "prerequisites": ["Computer Networks (BCS502)", "Operating Systems (BCS303)", "Microcontrollers and Embedded Systems"],
+    "prerequisites": ["Computer Networks (BCS502)", "Operating Systems (BCS303)", "Microcontroller and Embedded Systems (BCS402)"],
     "credits": 3,
     "tags": [
       "iot",
@@ -1622,7 +1622,7 @@
     "course_code": "BCSL657D",
     "name": "DevOps Laboratory",
     "description": "Practical course on the tools and practices used to automate software delivery. Covers version control, continuous integration/continuous deployment (CI/CD) pipelines, containerization, and infrastructure as code.",
-    "prerequisites": ["Cloud Computing (BCS601)", "Software Engineering (BCS501)", "Linux basics"],
+    "prerequisites": ["Cloud Computing (BCS601)", "Software Engineering and Project Management (BCS501)", "Linux basics"],
     "credits": 1,
     "tags": [
       "devops",
@@ -1656,7 +1656,7 @@
     "course_code": "BME654A",
     "name": "Project Management",
     "description": "Covers the complete project lifecycle from inception to termination. Focuses on project selection strategies, Work Breakdown Structures (WBS), resource leveling, risk management, and quantitative scheduling techniques like PERT and CPM.",
-    "prerequisites": ["Management and Entrepreneurship (BCS403/Equivalent)"],
+    "prerequisites": ["Management and Entrepreneurship"],
     "credits": 3,
     "tags": [
       "project management",
@@ -1687,7 +1687,7 @@
     "course_code": "BCS701",
     "name": "Internet of Things",
     "description": "Comprehensive study of IoT architecture, design methodologies, and physical devices. Covers the integration of sensors, microcontrollers (Arduino/Raspberry Pi), communication protocols, and data analytics using big data frameworks.",
-    "prerequisites": ["Computer Networks (BCS502)", "Cloud Computing (BCS601)", "Microcontrollers (BCS402)"],
+    "prerequisites": ["Computer Networks (BCS502)", "Cloud Computing (BCS601)", "Microcontroller and Embedded Systems (BCS402)"],
     "credits": 4,
     "tags": [
       "iot",
@@ -1752,7 +1752,7 @@
     "course_code": "BCS702",
     "name": "Parallel Computing",
     "description": "Introduction to the architectures and programming models for parallel systems. Covers parallel algorithm design, performance analysis (Amdahl's Law), and hands-on programming with OpenMP for shared memory and MPI for distributed memory systems.",
-    "prerequisites": ["Computer Organization and Architecture (BCS302)", "Design and Analysis of Algorithms (BCS401)", "Operating Systems (BCS303)"],
+    "prerequisites": ["Digital Design and Computer Organization (BCS302)", "Analysis and Design of Algorithms (BCS401)", "Operating Systems (BCS303)"],
     "credits": 4,
     "tags": [
       "parallel computing",
@@ -1878,7 +1878,7 @@
     "course_code": "BIS714B",
     "name": "Software Quality Assurance",
     "description": "Explores the methodologies and tools used to ensure software quality throughout the development lifecycle. Covers quality models, testing strategies (Manual and Automated), process improvement frameworks, and the distinction between Quality Assurance and Quality Control.",
-    "prerequisites": ["Software Engineering (BCS501)", "Operating Systems (BCS303)"],
+    "prerequisites": ["Software Engineering and Project Management (BCS501)", "Operating Systems (BCS303)"],
     "credits": 3,
     "tags": [
       "sqa",
@@ -1909,7 +1909,7 @@
     "course_code": "BAD714D",
     "name": "Social Network Analysis",
     "description": "Explores the structure and dynamics of social networks using graph theory and statistical models. Covers centrality measures, community detection, small-world phenomena, and the modeling of influence and information diffusion across large-scale networks.",
-    "prerequisites": ["Graph Theory", "Design and Analysis of Algorithms (BCS401)", "Machine Learning (BCS602)"],
+    "prerequisites": ["Graph Theory", "Analysis and Design of Algorithms (BCS401)", "Machine Learning (BCS602)"],
     "credits": 3,
     "tags": [
       "sna",
@@ -1940,7 +1940,7 @@
     "course_code": "BIS714C",
     "name": "Embedded Systems",
     "description": "An in-depth study of the design, analysis, and implementation of embedded computing systems. Covers hardware-software co-design, ARM processor architecture, Real-Time Operating Systems (RTOS), memory management, and power-efficient system design.",
-    "prerequisites": ["Computer Organization and Architecture (BCS302)", "Microcontrollers (BCS402)", "Operating Systems (BCS303)"],
+    "prerequisites": ["Digital Design and Computer Organization (BCS302)", "Microcontroller and Embedded Systems (BCS402)", "Operating Systems (BCS303)"],
     "credits": 3,
     "tags": [
       "embedded systems",
@@ -1971,7 +1971,7 @@
     "course_code": "BME755A",
     "name": "Introduction to Non-Traditional Machining",
     "description": "An overview of advanced manufacturing processes that use unconventional energy sources. Covers Mechanical, Electrical, Chemical, and Thermal machining methods, highlighting their mechanisms, equipment, and industrial applications.",
-    "prerequisites": ["Manufacturing Process (BME304/Equivalent)", "Physics"],
+    "prerequisites": ["Manufacturing Process", "Physics"],
     "credits": 3,
     "tags": [
       "machining",

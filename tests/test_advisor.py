@@ -183,12 +183,13 @@ def test_validate_course_codes_drops_step_with_fabricated_first_hop(advisor):
 def test_validate_course_codes_keeps_steps_without_any_code_claim(advisor):
     # Free-text descriptions with no course code aren't verifiable against
     # the catalog, so they pass through unchanged rather than being dropped.
+    # "Cryptography basics" (BCS613A's real prerequisite) has no course code.
     data = {
         "enroll_now": [],
         "unlock_next": [
             {
-                "complete_first": "Basics of C programming concepts",
-                "this_will_unlock": "Data Structure and Applications (BCS304)",
+                "complete_first": "Cryptography basics",
+                "this_will_unlock": "Blockchain Technology (BCS613A)",
                 "which_then_unlocks": "",
             }
         ],
@@ -244,7 +245,7 @@ def test_validate_course_codes_normalizes_bare_code_to_name_and_code(advisor):
         "enroll_now": [],
         "unlock_next": [
             {
-                "complete_first": "C Programming Concepts",
+                "complete_first": "Introduction to C Programming (BPOPS102/203)",
                 "this_will_unlock": "BCSL305",
                 "which_then_unlocks": "",
             }
@@ -323,7 +324,7 @@ def test_validate_course_codes_does_not_shred_course_names_containing_plus(advis
         "enroll_now": [],
         "unlock_next": [
             {
-                "complete_first": "Basics of C Programming",
+                "complete_first": "Introduction to C Programming (BPOPS102/203)",
                 "this_will_unlock": "Object Oriented Programming with C++ (BCS306B)",
                 "which_then_unlocks": "",
             }
